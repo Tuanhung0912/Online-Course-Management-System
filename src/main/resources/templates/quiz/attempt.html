@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Làm Bài Trắc Nghiệm</title>
+    <th:block th:replace="layout :: link-css"></th:block>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link th:fragment="link-css" rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link th:fragment="link-css" rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+        }
+        h1 {
+            color: #343a40;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        .container mt-5 {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 20px 30px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h4 {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #495057;
+        }
+        .form-check {
+            margin-bottom: 10px;
+        }
+        .form-check input[type="radio"] {
+            margin-right: 10px;
+        }
+        label {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #495057;
+        }
+        .btn-success {
+            background: linear-gradient(45deg, #28a745, #218838);
+            border: none;
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 30px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-bottom: 20px;
+        }
+        .btn-success:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .question-container {
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            background-color: #f8f9fa;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .question-container:hover {
+            background-color: #f1f3f5;
+        }
+        a {
+            text-decoration: none;
+        }
+
+        /* Đồng hồ đếm ngược */
+        #timer {
+            font-size: 2rem; /* Tăng kích thước */
+            font-weight: bold;
+            color: #ff3b3b; /* Màu đỏ đậm để nhấn mạnh */
+            background: linear-gradient(45deg, #ff6161, #ff3b3b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent; /* Chỉ giữ gradient */
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            padding: 10px 20px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+
+        /* Nút bắt đầu */
+        #startQuiz {
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            border: none;
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #fff;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        #startQuiz:hover {
+            background: linear-gradient(45deg, #0056b3, #003f7f);
+            transform: scale(1.1);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Phần chứa đồng hồ */
+        .timer-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .timer-label {
+            font-size: 1rem;
+            color: #495057;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        /* Nút quay về đầu trang */
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(45deg, #6a11cb, #2575fc);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            font-size: 1.5rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+        }
+        .back-to-top.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .back-to-top:hover {
+            transform: scale(1.2);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Hiệu ứng cuộn */
+        .scroll-animation {
+            animation: scrollToTop 1s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        @keyframes scrollToTop {
+            from {
+                transform: translateY(300px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+<th:block th:replace="layout::header"></th:block>
+<div class="container mt-5">
+
+    <!-- Tiêu đề bài quiz -->
+    <h1 th:text="${quiz.title}" class="text-center mb-4"></h1>
+
+    <!-- Đồng hồ tính giờ -->
+    <div class="timer-container">
+        <div class="timer-label">Thời gian còn lại:</div>
+        <div id="timer" th:text="${quiz.duration} + ':00'">00:00</div>
+        <button type="button" class="btn btn-primary mt-3" id="startQuiz">
+            <i class="fas fa-play"></i> Bắt đầu
+        </button>
+    </div>
+
+
+    <form th:action="@{/quizzes/submit}" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="userId" th:value="${userId}"> <!-- ID người dùng -->
+        <input type="hidden" name="courseId" th:value="${courseId}"> <!-- ID khóa học -->
+        <input type="hidden" name="quizId" th:value="${quiz.id}"> <!-- ID quiz -->
+
+        <!-- Danh sách câu hỏi -->
+        <div th:each="question : ${questions}" class="question-container">
+            <h4 th:text="${question.content}"></h4>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" th:id="'optionA-' + ${question.id}" th:name="${question.id}" value="A">
+                <label class="form-check-label" th:for="'optionA-' + ${question.id}" th:text="'A. ' + ${question.optionA}"></label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" th:id="'optionB-' + ${question.id}" th:name="${question.id}" value="B">
+                <label class="form-check-label" th:for="'optionB-' + ${question.id}" th:text="'B. ' + ${question.optionB}"></label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" th:id="'optionC-' + ${question.id}" th:name="${question.id}" value="C">
+                <label class="form-check-label" th:for="'optionC-' + ${question.id}" th:text="'C. ' + ${question.optionC}"></label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" th:id="'optionD-' + ${question.id}" th:name="${question.id}" value="D">
+                <label class="form-check-label" th:for="'optionD-' + ${question.id}" th:text="'D. ' + ${question.optionD}"></label>
+            </div>
+        </div>
+
+        <!-- Nút nộp bài -->
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-paper-plane"></i> Nộp bài
+            </button>
+        </div>
+    </form>
+</div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const timerElement = document.getElementById("timer");
+        const startButton = document.getElementById("startQuiz");
+        const formInputs = document.querySelectorAll("form input"); // Các trường trong form
+        const submitButton = document.querySelector("button[type='submit']"); // Nút "Nộp bài"
+        let timeLeft = [[${quiz.duration * 60}]]; // Lấy thời gian từ model (đổi phút sang giây)
+
+        // Vô hiệu hóa form ban đầu
+        function disableForm(disabled) {
+            formInputs.forEach(input => input.disabled = disabled);
+            submitButton.disabled = disabled; // Vô hiệu hóa nút "Nộp bài"
+        }
+
+        // Khởi tạo: Vô hiệu hóa form
+        disableForm(true);
+
+        function startTimer() {
+            // Bật lại form khi bấm "Bắt đầu"
+            disableForm(false);
+
+            // Vô hiệu hóa nút "Bắt đầu"
+            startButton.disabled = true;
+            startButton.style.display = "none"; // Ẩn nút "Bắt đầu"
+
+            // Bắt đầu đếm ngược
+            const timerInterval = setInterval(() => {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+
+                timerElement.textContent = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    alert("Hết thời gian! Hệ thống sẽ tự động nộp bài!!!");
+                    submitButton.click(); // Tự động bấm nút "Nộp bài"
+                }
+
+                timeLeft--;
+            }, 1000);
+        }
+
+        // Sự kiện bấm nút "Bắt đầu"
+        startButton.addEventListener("click", startTimer);
+    });
+</script>
+
+<!-- Nút quay về đầu trang -->
+<button class="back-to-top" id="backToTop">
+    <i class="fa fa-chevron-up"></i>
+</button>
+
+<script>
+    // Hiển thị nút quay về đầu trang khi cuộn
+    const backToTopButton = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) {
+            backToTopButton.classList.add('show');
+        } else {
+            backToTopButton.classList.remove('show');
+        }
+    });
+
+    // Cuộn mượt mà về đầu trang khi nhấn nút
+    backToTopButton.addEventListener('click', () => {
+        document.documentElement.classList.add('scroll-animation'); // Thêm hiệu ứng
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        // Xóa hiệu ứng sau khi hoàn tất
+        setTimeout(() => {
+            document.documentElement.classList.remove('scroll-animation');
+        }, 1000);
+    });
+</script>
+
+<th:block th:replace="layout::footer"></th:block>
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

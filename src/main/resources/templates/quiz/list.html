@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh Sách Bài Tập Trắc Nghiệm</title>
+    <th:block th:replace="layout :: link-css"></th:block>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link th:fragment="link-css" rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link th:fragment="link-css" rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f9f9fb;
+            font-family: 'Arial', sans-serif;
+        }
+
+        /* Header */
+        .quiz-header {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: #fff;
+            padding: 25px 10px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .quiz-header h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+
+        /* Table */
+        .table-container {
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            overflow: hidden;
+        }
+
+        table {
+            margin: 0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .table thead {
+            background: linear-gradient(to right, #007bff, #0056b3);
+            color: #fff;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f1f1f1;
+            transform: scale(1.01);
+            transition: all 0.3s ease;
+        }
+
+        .table td, .table th {
+            text-align: center;
+            vertical-align: middle;
+            padding: 12px;
+        }
+
+        /* Buttons */
+        .btn {
+            font-size: 0.95rem;
+            font-weight: bold;
+            border-radius: 30px;
+            padding: 8px 15px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            color: #fff;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(to right, #5b0edc, #1b6dc9);
+        }
+
+        .btn-secondary, .btn-warning, .btn-danger, .btn-success, .btn-info {
+            border: none;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .btn-info:hover {
+            background-color: #138496;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        /* Alert */
+        .alert-info {
+            background-color: #e3f2fd;
+            color: #0c5460;
+            font-size: 1.1rem;
+            text-align: center;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        /* Nút quay về đầu trang */
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(45deg, #6a11cb, #2575fc);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            font-size: 1.5rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+        }
+        .back-to-top.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .back-to-top:hover {
+            transform: scale(1.2);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Hiệu ứng cuộn */
+        .scroll-animation {
+            animation: scrollToTop 1s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        @keyframes scrollToTop {
+            from {
+                transform: translateY(300px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+<th:block th:replace="layout::header"></th:block>
+<div class="container">
+    <!-- Header Section -->
+    <div class="quiz-header">
+        <h1>BÀI TẬP TRẮC NGHIỆM</h1>
+    </div>
+
+    <!-- Buttons Section -->
+    <div class="d-flex justify-content-between mb-4">
+        <a th:href="@{/quizzes/add/{courseId}(courseId=${courseId})}" class="btn btn-primary" sec:authorize="hasAnyAuthority('ADMIN')">
+            <i class="fas fa-plus-circle"></i> Thêm Bài Tập
+        </a>
+        <a th:href="@{/lessons/list/{courseId}(courseId=${courseId})}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Quay Lại Bài Học
+        </a>
+    </div>
+
+    <!-- Table Section -->
+    <div class="table-container" th:if="${!quizzes.isEmpty()}">
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>Tiêu Đề</th>
+                <th>Mô Tả</th>
+                <th>Thời Lượng</th>
+                <th>Số Câu Hỏi</th>
+                <th>Thời Gian Tạo</th>
+                <th>Chức Năng</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="quiz : ${quizzes}">
+                <td th:text="${quiz.title}"></td>
+                <td th:text="${quiz.description}"></td>
+                <td th:text="${quiz.duration + ' phút'}"></td>
+                <td th:text="${questionCounts[quiz.id]}"></td>
+                <td th:text="${#temporals.format(quiz.creationTime, 'dd/MM/yyyy HH:mm:ss')}"></td>
+                <td>
+                    <a th:href="@{/quizzes/edit/{id}(id=${quiz.id})}" class="btn btn-warning btn-sm" sec:authorize="hasAnyAuthority('ADMIN')">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <a th:href="@{/quizzes/delete/{id}(id=${quiz.id})}" class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc chắn muốn xóa?');" sec:authorize="hasAnyAuthority('ADMIN')">
+                        <i class="fas fa-trash"></i>
+                    </a>
+                    <a th:href="@{/quiz-questions/list/{quizId}(quizId=${quiz.id})}" class="btn btn-info btn-sm" sec:authorize="hasAnyAuthority('ADMIN')">
+                        <i class="fas fa-question-circle"></i>
+                    </a>
+                    <a th:href="@{/quizzes/submissions/{quizId}(quizId=${quiz.id})}" class="btn btn-secondary btn-sm">
+                        <i class="fas fa-file-alt"></i>
+                    </a>
+                    <a th:href="@{/quizzes/attempt/{id}(id=${quiz.id})}" class="btn btn-success btn-sm">
+                        <i class="fas fa-play-circle"></i>
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Empty State -->
+    <div th:if="${quizzes.isEmpty()}" class="alert alert-info">
+        Không có bài tập nào trong khóa học.
+    </div>
+</div>
+
+<!-- Nút quay về đầu trang -->
+<button class="back-to-top" id="backToTop">
+    <i class="fa fa-chevron-up"></i>
+</button>
+
+<script>
+    // Hiển thị nút quay về đầu trang khi cuộn
+    const backToTopButton = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) {
+            backToTopButton.classList.add('show');
+        } else {
+            backToTopButton.classList.remove('show');
+        }
+    });
+
+    // Cuộn mượt mà về đầu trang khi nhấn nút
+    backToTopButton.addEventListener('click', () => {
+        document.documentElement.classList.add('scroll-animation'); // Thêm hiệu ứng
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        // Xóa hiệu ứng sau khi hoàn tất
+        setTimeout(() => {
+            document.documentElement.classList.remove('scroll-animation');
+        }, 1000);
+    });
+</script>
+
+<th:block th:replace="layout::footer"></th:block>
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

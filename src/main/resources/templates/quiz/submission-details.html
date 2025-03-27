@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Chi Tiết Bài Nộp</title>
+    <th:block th:replace="layout :: link-css"></th:block>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f8f9fa;
+            font-family: 'Roboto', sans-serif;
+        }
+        .container mt-5 {
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        h1 {
+            font-weight: bold;
+            color: #495057;
+            margin-bottom: 20px;
+        }
+        h4 {
+            color: #6c757d;
+        }
+        .table {
+            margin-top: 20px;
+            text-align: center; /* Căn giữa toàn bộ bảng */
+        }
+        thead th {
+            text-align: center; /* Căn giữa tiêu đề cột */
+            vertical-align: middle;
+        }
+        tbody td {
+            text-align: center; /* Căn giữa nội dung trong các ô */
+            vertical-align: middle; /* Căn giữa theo chiều dọc */
+        }
+        tbody tr:hover {
+            background-color: #f1f3f5;
+            transform: scale(1.02);
+        }
+        .badge {
+            padding: 10px;
+            font-size: 14px;
+        }
+        .bg-success {
+            background-color: #28a745 !important;
+        }
+        .bg-danger {
+            background-color: #dc3545 !important;
+        }
+
+        /* Nút quay về đầu trang */
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(45deg, #6a11cb, #2575fc);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            font-size: 1.5rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+        }
+        .back-to-top.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .back-to-top:hover {
+            transform: scale(1.2);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Hiệu ứng cuộn */
+        .scroll-animation {
+            animation: scrollToTop 1s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+	    @keyframes scrollToTop {
+            from {
+                transform: translateY(300px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+<div th:replace="layout::header"></div>
+<div class="container mt-5">
+    <h1 class="text-center">CHI TIẾT BÀI GỬI</h1>
+    <div class="d-flex flex-column align-items-start">
+        <h4 class="mb-2"><i class="fa fa-user"></i> <span th:text="'Người dùng: ' + ${questionResults[0].user.username}"></span></h4>
+        <h4 class="mb-2"><i class="fa fa-check-circle"></i> <span th:text="'Số câu đúng: ' + ${correctCount} + '/' + ${totalQuestions}"></span></h4>
+        <h4 class="mb-2"><i class="fa fa-clipboard"></i> <span th:text="'Quiz: ' + ${quiz.title}"></span></h4>
+    </div>
+
+    <table class="table table-bordered table-hover mt-4">
+        <thead>
+        <tr>
+            <th class="text-center">#</th>
+            <th class="text-center">Câu hỏi</th>
+            <th class="text-center">Thời gian nộp</th>
+            <th class="text-center">Phương án đã chọn</th>
+            <th class="text-center">Đáp án đúng</th>
+            <th class="text-center">Trạng thái</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="result, iterStat : ${questionResults}">
+            <td class="text-center align-middle" th:text="${iterStat.count}"></td>
+            <td class="text-center align-middle" th:text="${result.quizQuestion.content}"></td>
+            <td class="text-center align-middle" th:text="${#temporals.format(result.submitTime, 'dd/MM/yyyy HH:mm:ss')}"></td>
+            <td class="text-center align-middle" th:text="${result.selectedOption}"></td>
+            <td class="text-center align-middle" th:text="${result.quizQuestion.correctOption}"></td>
+            <td class="text-center align-middle">
+                <span th:if="${result.isCorrect}" class="badge bg-success"><i class="fa fa-check"></i> Đúng</span>
+                <span th:if="${!result.isCorrect}" class="badge bg-danger"><i class="fa fa-times"></i> Sai</span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Nút quay về đầu trang -->
+<button class="back-to-top" id="backToTop">
+    <i class="fa fa-chevron-up"></i>
+</button>
+
+<script>
+    // Hiển thị nút quay về đầu trang khi cuộn
+    const backToTopButton = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) {
+            backToTopButton.classList.add('show');
+        } else {
+            backToTopButton.classList.remove('show');
+        }
+    });
+
+    // Cuộn mượt mà về đầu trang khi nhấn nút
+    backToTopButton.addEventListener('click', () => {
+        document.documentElement.classList.add('scroll-animation'); // Thêm hiệu ứng
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        // Xóa hiệu ứng sau khi hoàn tất
+        setTimeout(() => {
+            document.documentElement.classList.remove('scroll-animation');
+        }, 1000);
+    });
+</script>
+
+<div th:replace="layout::footer"></div>
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

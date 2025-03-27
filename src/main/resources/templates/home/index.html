@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <meta charset="UTF-8">
+    <title>Hệ thống quản lý khóa học trực tuyến</title>
+    <th:block th:replace="layout :: link-css"></th:block>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link th:fragment="link-css" rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        a {
+            text-decoration: none;
+        }
+
+        body {
+            background: #f3f4f7; /* Màu xám nhạt, giúp nội dung nổi bật */
+            font-family: 'Arial', sans-serif; /* Tăng tính đọc dễ dàng */
+        }
+
+        /* Nút quay về đầu trang */
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(45deg, #6a11cb, #2575fc);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            font-size: 1.5rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+        }
+        .back-to-top.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .back-to-top:hover {
+            transform: scale(1.2);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Hiệu ứng cuộn */
+        .scroll-animation {
+            animation: scrollToTop 1s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        @keyframes scrollToTop {
+            from {
+                transform: translateY(300px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .animate-fade-in {
+            opacity: 0;
+            animation: fadeIn 2s forwards;
+        }
+
+        .animate-slide-in {
+            transform: translateY(30px);
+            opacity: 0;
+            animation: slideIn 1.5s forwards;
+        }
+
+        .animate-scale-up {
+            transform: scale(0.9);
+            opacity: 0;
+            animation: scaleUp 1.5s forwards;
+        }
+
+        .btn-hover {
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .btn-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.2;
+            z-index: 1;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideIn {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes scaleUp {
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .course-card {
+            cursor: pointer;
+            border: 1px solid #ddd;
+            transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+        }
+
+        .course-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            border-color: #339af0;
+        }
+
+        .course-card:hover .card-img-top {
+            filter: brightness(1.2);
+        }
+
+        .course-card:hover .overlay {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .rating span {
+            transition: color 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #339af0, #1c7ed6);
+            border: none;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #1c7ed6, #1864ab);
+            transform: scale(1.05);
+        }
+
+        .card-title {
+            color: #0056b3;
+            transition: color 0.3s;
+        }
+
+        .course-card:hover .card-title {
+            color: #003f7f;
+        }
+
+        /* Hero Banner tổng quát */
+        .hero-banner-wrapper {
+            position: relative;
+            width: 90%; /* Chiếm 90% chiều ngang để tạo khoảng trắng bên ngoài */
+            height: 90vh; /* Chiếm 90% chiều cao */
+            margin: auto; /* Căn giữa */
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(180deg, #f8f9fa, #e9ecef); /* Màu nền gradient nhẹ */
+            border-top: 1px solid #333; /* Chỉ viền trên */
+            border-bottom: 1px solid #333; /* Chỉ viền dưới */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
+        }
+
+        /* Mỗi slide */
+        .hero-banner-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            z-index: 1;
+        }
+
+        .hero-banner-slide.active {
+            opacity: 1;
+            z-index: 2;
+        }
+
+        /* Hero Container */
+        .hero-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 5%;
+        }
+
+        /* Hero Content */
+        .hero-content {
+            flex: 1;
+            max-width: 45%; /* Chiếm 45% chiều rộng màn hình */
+            margin-left: 5%; /* Đẩy nội dung vào giữa thêm 5% */
+            color: #333; /* Màu chữ tối */
+        }
+
+        .hero-content h1 {
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .hero-content p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
+
+        .hero-content .btn {
+            font-size: 1rem;
+            padding: 10px 20px;
+            border-radius: 50px;
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            color: #fff;
+            border: none;
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        .hero-content .btn:hover {
+            background: linear-gradient(45deg, #0056b3, #003f7f);
+            transform: scale(1.05);
+        }
+
+        /* Hero Banner */
+        .hero-banner {
+            flex: 1;
+            max-width: 50%; /* Chiếm 50% chiều rộng màn hình */
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .hero-banner img {
+            width: 100%;
+            height: auto; /* Giữ tỷ lệ ảnh */
+            object-fit: cover; /* Đảm bảo ảnh bao phủ toàn bộ Hero Banner */
+        }
+
+        /* Nút chuyển đổi slide */
+        .slide-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 4;
+            transition: background 0.3s;
+        }
+
+        .slide-nav:hover {
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        .slide-nav.prev {
+            left: 20px;
+        }
+
+        .slide-nav.next {
+            right: 20px;
+        }
+
+        .cert-card {
+            transition: transform 0.3s, box-shadow 0.3s;
+            background: #eef2f3;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .cert-card:hover {
+            transform: translateY(-10px); /* Hiệu ứng nổi lên */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* Hiệu ứng đổ bóng */
+        }
+
+        .featured-category-card {
+            transition: transform 0.3s, box-shadow 0.3s; /* Chỉ thay đổi kích thước và đổ bóng */
+            border-radius: 15px;
+            background: #ffffff; /* Màu nền trắng */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
+            overflow: hidden;
+        }
+
+        .featured-category-card:hover {
+            transform: translateY(-10px); /* Nổi lên nhẹ */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* Đổ bóng rõ hơn */
+        }
+
+        .featured-category-card .card-title {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #1e3a8a; /* Màu xanh đậm */
+            transition: color 0.3s; /* Chỉ thay đổi màu chữ */
+        }
+
+        .featured-category-card:hover .card-title {
+            color: #0f172a; /* Màu chữ đậm hơn */
+        }
+
+        .featured-category-card .btn {
+            border-radius: 20px;
+            background: linear-gradient(45deg, #2563eb, #1d4ed8); /* Gradient xanh đậm */
+            color: #fff;
+            transition: transform 0.2s, box-shadow 0.3s; /* Thay đổi kích thước và đổ bóng nút */
+        }
+
+        .featured-category-card .btn:hover {
+            transform: scale(1.1); /* Nút phóng to nhẹ */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Đổ bóng cho nút */
+        }
+
+        /* Tiêu đề chung */
+        .section-title {
+            font-size: 2.8rem; /* Kích thước chữ lớn hơn */
+            font-weight: 700; /* Chữ đậm */
+            color: #1e3a8a; /* Màu xanh đậm */
+            text-align: center; /* Căn giữa */
+            position: relative; /* Cho phép thêm gạch chân */
+            display: inline-block; /* Gạch chân vừa khít với nội dung */
+            margin: 0 auto 20px; /* Khoảng cách với phần nội dung bên dưới */
+            padding-bottom: 10px; /* Khoảng cách với đường gạch chân */
+            text-transform: uppercase; /* Viết hoa chữ */
+            letter-spacing: 1px; /* Tăng khoảng cách giữa các chữ */
+            transition: color 0.3s ease; /* Hiệu ứng đổi màu chữ */
+        }
+
+        /* Đường gạch chân dưới tiêu đề */
+        .section-title::after {
+            content: "";
+            position: absolute;
+            bottom: 0; /* Đặt ở dưới chữ */
+            left: 50%; /* Căn giữa */
+            transform: translateX(-50%); /* Dịch chuyển để căn giữa */
+            width: 80px; /* Độ dài ban đầu */
+            height: 4px; /* Độ dày của đường gạch chân */
+            background: linear-gradient(45deg, #2563eb, #1d4ed8); /* Gradient xanh đậm */
+            border-radius: 2px; /* Bo tròn góc */
+            transition: width 0.4s ease; /* Hiệu ứng mở rộng */
+        }
+
+        /* Hiệu ứng hover */
+        .section-title:hover::after {
+            width: 200px; /* Đường gạch chân mở rộng */
+        }
+
+        .section-title:hover {
+            color: #003f7f; /* Đổi màu chữ khi hover */
+        }
+    </style>
+</head>
+<body>
+<th:block th:replace="layout::header"></th:block>
+<div class="hero-banner-wrapper">
+    <!-- Slide 1 -->
+    <div class="hero-banner-slide active">
+        <div class="hero-container">
+            <!-- Hero Content -->
+            <div class="hero-content">
+                <h1>Khám phá kho tàng tri thức</h1>
+                <p>Học hỏi từ những giảng viên hàng đầu thế giới.</p>
+                <a href="/courses" class="btn btn-primary btn-lg btn-hover">Xem các khóa học</a>
+            </div>
+            <!-- Hero Banner -->
+            <div class="hero-banner">
+                <img th:src="@{/images/Banner_01.png}" alt="Banner Image">
+            </div>
+        </div>
+    </div>
+    <!-- Slide 2 -->
+    <div class="hero-banner-slide">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1>Thành công bắt đầu từ đây</h1>
+                <p>Đạt được mục tiêu của bạn với các khóa học chuyên sâu.</p>
+                <a href="/courses" class="btn btn-primary btn-lg btn-hover">Tìm hiểu thêm</a>
+            </div>
+            <div class="hero-banner">
+                <img th:src="@{/images/Banner_02.png}" alt="Banner Image">
+            </div>
+        </div>
+    </div>
+    <!-- Slide 3 -->
+    <div class="hero-banner-slide">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1>Học bất cứ lúc nào, bất cứ nơi đâu</h1>
+                <p>Tiếp cận kiến thức dễ dàng với hệ thống học trực tuyến.</p>
+                <a href="/courses" class="btn btn-primary btn-lg btn-hover">Bắt đầu ngay</a>
+            </div>
+            <div class="hero-banner">
+                <img th:src="@{/images/Banner_03.png}" alt="Banner Image">
+            </div>
+        </div>
+    </div>
+
+    <!-- Nút chuyển đổi slide -->
+    <button class="slide-nav prev" onclick="prevSlide()">&#10094;</button>
+    <button class="slide-nav next" onclick="nextSlide()">&#10095;</button>
+</div>
+
+<div class="container my-5 text-center">
+    <h2 class="section-title mb-4">DANH MỤC NỔI BẬT</h2>
+    <div class="row">
+        <div th:each="catalog : ${topCourseCatalogs}" class="col-md-4 mb-4">
+            <div class="featured-category-card card text-center">
+                <div class="card-body">
+                    <h5 class="card-title" th:text="${catalog.name}"></h5>
+                    <p class="card-text text-muted" th:text="'Số khóa học: ' + ${catalog.courses.size()}"></p>
+                    <a th:href="@{/courses/searchByCatalog(catalogId=${catalog.id})}" class="btn btn-primary">Xem chi tiết</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="container my-5 text-center">
+    <h2 class="section-title mb-4">KHÓA HỌC NỔI BẬT</h2>
+    <div class="row">
+        <!-- Lặp qua danh sách topRatedCourses -->
+        <div th:each="course : ${topRatedCourses}" class="col-md-4 mb-4">
+            <div class="card shadow-sm course-card" style="overflow: hidden; border-radius: 15px; position: relative; transition: transform 0.3s, box-shadow 0.3s;">
+                <img th:src="${course.imageData}" alt="Course Image" class="card-img-top" style="height: 200px; object-fit: cover; filter: brightness(1.1); transition: filter 0.3s;">
+                <div class="card-body text-center" style="background: linear-gradient(to bottom, rgba(255,255,255,0.4) 0%, rgba(255,255,255,1) 100%); position: relative; z-index: 2;">
+                    <h5 class="card-title" th:text="${course.name}" style="font-weight: bold; font-size: 1.2rem; color: #0056b3;"></h5>
+
+                    <!-- Mô tả khóa học -->
+                    <p class="card-text text-muted" th:text="${course.description}" style="font-size: 0.9rem; line-height: 1.5; height: 50px; overflow: hidden; text-overflow: ellipsis;"></p>
+
+                    <!-- Hiển thị danh mục khóa học -->
+                    <p class="card-text" style="font-size: 0.9rem; color: #6c757d;">
+                        <strong>Danh mục:</strong>
+                        <span th:text="${course.courseCatalog.name}"></span>
+                    </p>
+
+                    <!-- Hiển thị thời lượng khóa học -->
+                    <p class="card-text" style="font-size: 0.9rem; color: #6c757d;">
+                        <strong>Thời lượng:</strong>
+                        <span th:text="${course.duration} + ' giờ'"></span>
+                    </p>
+
+                    <!-- Hiển thị đánh giá -->
+                    <div class="rating mb-3">
+                        <span th:each="star : ${#numbers.sequence(1, 5)}"
+                              th:classappend="${star <= courseRatings[course.id]['averageRating'] ? 'fas fa-star text-warning' : 'far fa-star text-muted'}"
+                              style="margin-right: 2px; font-size: 1.1rem;"></span>
+                        <span class="text-muted" th:text="'(' + ${courseRatings[course.id]['ratingCount']} + ' đánh giá)'"></span>
+                    </div>
+
+                    <!-- Nút xem chi tiết -->
+                    <a th:href="@{/courses/details/{id}(id=${course.id})}" class="btn btn-primary" style="border-radius: 20px; padding: 10px 20px; font-size: 1rem;">Xem chi tiết</a>
+                </div>
+                <div class="overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.1); z-index: 1; transition: background 0.3s;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="container my-5 text-center">
+    <h2 class="section-title mb-4">CHỨNG NHẬN</h2>
+    <div class="row text-center">
+        <!-- Chứng nhận 1 -->
+        <div class="col-md-3 mb-4 animate-slide-in">
+            <div class="cert-card shadow p-4" style="border-radius: 15px; background: #eef2f3;">
+                <i class="fas fa-globe fa-3x mb-3" style="color: #6a11cb;"></i>
+                <h5 style="font-weight: bold;">Chứng Nhận Quốc Tế</h5>
+                <p>Được công nhận bởi các tổ chức giáo dục hàng đầu.</p>
+            </div>
+        </div>
+        <!-- Chứng nhận 2 -->
+        <div class="col-md-3 mb-4 animate-slide-in">
+            <div class="cert-card shadow p-4" style="border-radius: 15px; background: #eef2f3;">
+                <i class="fas fa-award fa-3x mb-3" style="color: #f1c40f;"></i>
+                <h5 style="font-weight: bold;">Chứng Nhận Kỹ Năng</h5>
+                <p>Cung cấp các chứng nhận kỹ năng cho từng khóa học hoàn thành.</p>
+            </div>
+        </div>
+        <!-- Chứng nhận 3 -->
+        <div class="col-md-3 mb-4 animate-slide-in">
+            <div class="cert-card shadow p-4" style="border-radius: 15px; background: #eef2f3;">
+                <i class="fas fa-briefcase fa-3x mb-3" style="color: #2ecc71;"></i>
+                <h5 style="font-weight: bold;">Công Nhận Bởi Doanh Nghiệp</h5>
+                <p>Được các công ty hàng đầu công nhận và đánh giá cao.</p>
+            </div>
+        </div>
+        <!-- Chứng nhận 4 -->
+        <div class="col-md-3 mb-4 animate-slide-in">
+            <div class="cert-card shadow p-4" style="border-radius: 15px; background: #eef2f3;">
+                <i class="fas fa-certificate fa-3x mb-3" style="color: #3498db;"></i>
+                <h5 style="font-weight: bold;">Chứng Nhận Hoàn Thành</h5>
+                <p>Nhận chứng nhận khi hoàn thành khóa học.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Nút quay về đầu trang -->
+<button class="back-to-top" id="backToTop">
+    <i class="fa fa-chevron-up"></i>
+</button>
+
+<script>
+    // Hiển thị nút quay về đầu trang khi cuộn
+    const backToTopButton = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) {
+            backToTopButton.classList.add('show');
+        } else {
+            backToTopButton.classList.remove('show');
+        }
+    });
+
+    // Cuộn mượt mà về đầu trang khi nhấn nút
+    backToTopButton.addEventListener('click', () => {
+        document.documentElement.classList.add('scroll-animation'); // Thêm hiệu ứng
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        // Xóa hiệu ứng sau khi hoàn tất
+        setTimeout(() => {
+            document.documentElement.classList.remove('scroll-animation');
+        }, 1000);
+    });
+</script>
+
+<script>
+    let currentSlideIndex = 0;
+    const slides = document.querySelectorAll('.hero-banner-slide');
+
+    function showSlide(index) {
+        slides.forEach((slide, i) => {
+            slide.classList.remove('active');
+            if (i === index) slide.classList.add('active');
+        });
+    }
+
+    function nextSlide() {
+        currentSlideIndex = (currentSlideIndex + 1) % slides.length;
+        showSlide(currentSlideIndex);
+    }
+
+    function prevSlide() {
+        currentSlideIndex = (currentSlideIndex - 1 + slides.length) % slides.length;
+        showSlide(currentSlideIndex);
+    }
+
+    // Tự động chuyển slide sau mỗi 5 giây
+    setInterval(nextSlide, 5000);
+</script>
+
+
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+<th:block th:replace="layout::footer"></th:block>
+</body>
+</html>

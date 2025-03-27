@@ -1,0 +1,75 @@
+/*Custom Layout*/
+a {
+    text-decoration: none;
+}
+
+/* Tùy chỉnh logo trong navbar */
+.navbar-brand .logo {
+    max-height: 80px; /* Chiều cao tối đa */
+    width: auto; /* Chiều rộng tự động */
+    transition: transform 0.3s ease; /* Hiệu ứng khi hover */
+}
+
+.navbar-brand .logo:hover {
+    transform: scale(1.1); /* Phóng to logo nhẹ khi hover */
+}
+
+/* Navbar links thành dạng nút */
+.navbar-nav .nav-link {
+    color: #fff; /* Màu chữ */
+    font-weight: 500; /* Chữ đậm vừa */
+    padding: 8px 15px; /* Khoảng cách trong nút */
+    border-radius: 30px; /* Bo tròn nút */
+    transition: all 0.3s ease; /* Hiệu ứng chuyển đổi */
+    margin: 0 5px; /* Khoảng cách giữa các nút */
+    text-align: center;
+}
+
+.navbar-nav .nav-link:hover {
+    background: linear-gradient(135deg, #6a11cb, #2575fc); /* Gradient xanh tím */
+    color: #fff; /* Màu chữ khi hover */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Bóng đổ nhẹ */
+    transform: translateY(-2px); /* Nổi nhẹ khi hover */
+}
+
+/* Dropdown menu hover */
+.navbar-nav .dropdown-menu {
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.navbar-nav .dropdown-item {
+    transition: all 0.3s ease;
+}
+
+.navbar-nav .dropdown-item:hover {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: #fff;
+}
+
+/* Hiệu ứng cho nút đang active */
+.navbar-nav .nav-link.active,
+.navbar-nav .nav-link:active {
+    background: linear-gradient(135deg, #339af0, #1c7ed6);
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.custom-admin-item {
+    color: #28a745 !important; /* Màu xanh lá */
+    font-weight: bold; /* Chữ in đậm */
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.custom-admin-item:hover {
+    background-color: #d4edda; /* Màu nền xanh nhạt */
+    color: #fff !important; /* Màu chữ xanh đậm */
+    border-radius: 5px; /* Làm tròn góc */
+}
+
+
+
+
+
+
+

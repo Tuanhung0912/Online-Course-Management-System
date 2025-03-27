@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Chỉnh Sửa Bài Học</title>
+    <th:block th:replace="layout :: link-css"></th:block>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link th:fragment="link-css" rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link th:fragment="link-css" rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f9f9fb;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .container-form {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 30px 40px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            max-width: 700px;
+            margin: 40px auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #4a4a4a;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1::after {
+            content: "";
+            display: block;
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(45deg, #28a745, #218838);
+            margin: 10px auto;
+            border-radius: 10px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .form-control {
+            border-radius: 10px;
+            padding: 12px;
+            transition: all 0.3s ease-in-out;
+            border: 2px solid #e9ecef;
+        }
+
+        .form-control:focus {
+            border-color: #28a745;
+            box-shadow: 0 0 8px rgba(40, 167, 69, 0.5);
+            transform: scale(1.02);
+        }
+
+        /* Nút lưu */
+        .btn-success {
+            background: linear-gradient(45deg, #28a745, #218838);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            padding: 12px 25px;
+            border-radius: 50px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(45deg, #218838, #1e7e34);
+            transform: scale(1.05);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Video preview */
+        .video-preview {
+            margin: 20px auto;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            max-width: 100%;
+            background: #000;
+        }
+
+        video {
+            width: 100%;
+            height: auto;
+        }
+
+        .text-center a {
+            font-weight: bold;
+            color: #28a745;
+            text-decoration: none;
+        }
+
+        .text-center a:hover {
+            color: #218838;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<th:block th:replace="layout :: header"></th:block>
+<div class="container-form">
+    <h1>CHỈNH SỬA BÀI HỌC</h1>
+
+    <form th:action="@{/lessons/edit/{lessonId}(lessonId=${lesson.id})}" method="post" enctype="multipart/form-data">
+        <!-- Hidden input for courseId -->
+        <input type="hidden" th:name="courseId" th:value="${courseId}" />
+
+        <!-- Tên bài học -->
+        <div class="mb-3">
+            <label for="name" class="form-label">Tên Bài Học</label>
+            <input type="text" id="name" name="name" class="form-control" th:value="${lesson.name}"
+                   placeholder="Nhập tên bài học" required />
+        </div>
+
+        <!-- Mô tả -->
+        <div class="mb-3">
+            <label for="description" class="form-label">Mô Tả</label>
+            <textarea id="description" name="description" class="form-control" rows="4"
+                      placeholder="Nhập mô tả bài học" required th:text="${lesson.description}"></textarea>
+        </div>
+
+        <!-- Video hiện tại -->
+        <div class="mb-3" th:if="${lesson.videoUrl != null}">
+            <label class="form-label">Video Hiện Tại</label>
+            <div class="video-preview">
+                <video controls>
+                    <source th:src="@{${lesson.videoUrl}}" type="video/mp4">
+                    Trình duyệt không hỗ trợ video.
+                </video>
+            </div>
+        </div>
+
+        <!-- Upload video -->
+        <div class="mb-3">
+            <label for="videoFile" class="form-label">Cập Nhật Tệp Video</label>
+            <input type="file" id="videoFile" name="videoFile" class="form-control" accept="video/*">
+        </div>
+
+        <!-- Nút lưu -->
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-save"></i> Lưu Thay Đổi
+            </button>
+        </div>
+
+        <!-- Nút quay lại -->
+        <div class="text-center mt-3">
+            <a th:href="@{/courses/details/{id}(id=${courseId})}">
+                <i class="fas fa-arrow-left"></i> Quay lại khóa học
+            </a>
+        </div>
+    </form>
+</div>
+<th:block th:replace="layout :: footer"></th:block>
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

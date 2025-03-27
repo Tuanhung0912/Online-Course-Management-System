@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Khóa học của tôi</title>
+    <th:block th:replace="layout :: link-css"></th:block>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link th:fragment="link-css" rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link th:fragment="link-css" rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        .course-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .course-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+        .header {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .card-body p {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+            color: #555;
+        }
+        .card-body p i {
+            color: #007bff;
+            font-size: 1.2rem;
+        }
+        .card-title {
+            margin-bottom: 12px;
+        }
+        .card-text {
+            display: block;
+            white-space: nowrap; /* Không cho phép xuống dòng */
+            overflow: hidden; /* Ẩn nội dung tràn ra ngoài */
+            text-overflow: ellipsis; /* Thêm dấu ba chấm */
+        }
+        /* Nút Xem Chi Tiết */
+        .btn-primary {
+            background-color: #007bff;
+            color: #fff;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary i {
+            color: #fff; /* Icon màu trắng */
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.4);
+        }
+
+        /* Nút Xóa */
+        .btn-danger {
+            background-color: #dc3545;
+            color: #fff;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-danger i {
+            color: #fff; /* Icon màu trắng */
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+        }
+
+        /* Icon chỉnh sửa */
+        .btn i {
+            font-size: 1.2rem;
+        }
+
+        /* Nút quay về đầu trang */
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(45deg, #6a11cb, #2575fc);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            font-size: 1.5rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+        }
+        .back-to-top.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .back-to-top:hover {
+            transform: scale(1.2);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Hiệu ứng cuộn */
+        .scroll-animation {
+            animation: scrollToTop 1s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        @keyframes scrollToTop {
+            from {
+                transform: translateY(300px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+<th:block th:replace="layout::header"></th:block>
+<div class="container mt-5">
+    <!-- Header -->
+    <div class="header">
+        <h1>KHÓA HỌC CỦA TÔI</h1>
+        <p>Danh sách các khóa học mà bạn đã tham gia</p>
+    </div>
+
+    <!-- Danh sách khóa học -->
+    <div class="row">
+        <div th:if="${#lists.isEmpty(enrollments)}">
+            <p class="text-center text-muted">Bạn chưa tham gia khóa học nào.</p>
+        </div>
+
+        <div class="col-md-4" th:each="enrollment : ${enrollments}">
+            <div class="card course-card mb-4">
+                <img th:src="${enrollment.course.imageData}" class="card-img-top" alt="Course Image" style="height: 200px; object-fit: cover;">
+                <div class="card-body">
+                    <h3 class="card-title" th:text="${enrollment.course.name}"></h3>
+                    <p class="card-text">
+                        <i class="fas fa-book"></i>
+                        <strong>Mô tả:</strong> <span th:text="${enrollment.course.courseCatalog.name}"></span>
+                    </p>
+                    <p class="card-text">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Mô tả:</strong> <span th:text="${enrollment.course.description}"></span>
+                    </p>
+                    <p class="card-text">
+                        <i class="fas fa-clock"></i>
+                        <strong>Thời lượng:</strong> <span th:text="${enrollment.course.duration} + ' giờ'"></span>
+                    </p>
+                    <p class="card-text">
+                        <i class="fas fa-calendar-alt"></i>
+                        <strong>Ngày tham gia:</strong>
+                        <span th:text="${#temporals.format(enrollment.enrollmentDate, 'dd/MM/yyyy')}"></span>
+                    </p>
+                    <p class="card-text">
+                        <i class="fas fa-hourglass-half"></i>
+                        <strong>Tổng thời gian đã tham gia:</strong>
+                        <span th:text="${totalStudyTimeMap[enrollment.course.id]} + ' giờ'">0 giờ</span>
+                    </p>
+                    <a th:href="@{/courses/details/{id}(id=${enrollment.course.id})}" class="btn btn-primary shadow-sm">
+                        <i class="fas fa-info-circle"></i> Xem Chi Tiết
+                    </a>
+                </div>
+                <div class="card-footer">
+                    <form th:action="@{/enrollments/delete}" method="post">
+                        <!-- Ẩn courseId -->
+                        <input type="hidden" name="courseId" th:value="${enrollment.course.id}" />
+
+                        <!-- Nút Xóa -->
+                        <button type="submit" class="btn btn-danger btn-sm shadow"
+                                onclick="return confirm('Bạn có chắc chắn muốn xóa?')">
+                            <i class="fas fa-trash-alt"></i> Xóa
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Nút quay về đầu trang -->
+<button class="back-to-top" id="backToTop">
+    <i class="fa fa-chevron-up"></i>
+</button>
+
+<script>
+    // Hiển thị nút quay về đầu trang khi cuộn
+    const backToTopButton = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) {
+            backToTopButton.classList.add('show');
+        } else {
+            backToTopButton.classList.remove('show');
+        }
+    });
+
+    // Cuộn mượt mà về đầu trang khi nhấn nút
+    backToTopButton.addEventListener('click', () => {
+        document.documentElement.classList.add('scroll-animation'); // Thêm hiệu ứng
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        // Xóa hiệu ứng sau khi hoàn tất
+        setTimeout(() => {
+            document.documentElement.classList.remove('scroll-animation');
+        }, 1000);
+    });
+</script>
+
+
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<th:block th:replace="layout::footer"></th:block>
+</body>
+</html>

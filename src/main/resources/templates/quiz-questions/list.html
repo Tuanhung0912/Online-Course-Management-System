@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách câu hỏi</title>
+    <th:block th:replace="layout :: link-css"></th:block>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link th:fragment="link-css" rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link th:fragment="link-css" rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+        }
+        h1 {
+            color: #343a40;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        .container mt-5 {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .container mt-5:hover {
+            transform: scale(1.01);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3), 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+        .table {
+            border-collapse: separate;
+            border-spacing: 0;
+            background: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .table thead {
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            color: white;
+            text-align: center;
+        }
+        .table thead th {
+            padding: 12px;
+            font-size: 1rem;
+        }
+        .table tbody tr {
+            transition: background 0.3s, transform 0.2s;
+            text-align: center;
+        }
+        .table tbody tr:hover {
+            background: #f1f3f5;
+            transform: translateX(5px);
+        }
+        .table tbody td {
+            padding: 10px;
+            vertical-align: middle;
+        }
+        /* Nút tổng thể */
+        .btn {
+            font-size: 0.95rem;
+            font-weight: bold;
+            padding: 8px 15px;
+            border-radius: 30px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        /* Nút Thêm câu hỏi */
+        .btn-primary {
+            background: linear-gradient(45deg, #28a745, #218838);
+            color: #fff;
+            border: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #218838, #28a745);
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Nút Quay lại */
+        .btn-secondary {
+            background: linear-gradient(45deg, #6c757d, #5a6268);
+            color: #fff;
+            border: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(45deg, #5a6268, #6c757d);
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Nút Sửa */
+        .btn-warning {
+            background: linear-gradient(45deg, #ffc107, #e0a800);
+            color: #fff;
+            border: none;
+        }
+
+        .btn-warning:hover {
+            background: linear-gradient(45deg, #e0a800, #d39e00);
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Nút Xóa */
+        .btn-danger {
+            background: linear-gradient(45deg, #dc3545, #c82333);
+            color: #fff;
+            border: none;
+        }
+
+        .btn-danger:hover {
+            background: linear-gradient(45deg, #c82333, #bd2130);
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(255, 0, 0, 0.2);
+        }
+
+        /* Hiệu ứng icon */
+        .btn i {
+            font-size: 1.1rem;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        /* Nút quay về đầu trang */
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(45deg, #6a11cb, #2575fc);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            font-size: 1.5rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+        }
+        .back-to-top.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .back-to-top:hover {
+            transform: scale(1.2);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Hiệu ứng cuộn */
+        .scroll-animation {
+            animation: scrollToTop 1s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        @keyframes scrollToTop {
+            from {
+                transform: translateY(300px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+<th:block th:replace="layout::header"></th:block>
+<div class="container mt-5">
+    <h1 class="mb-4 text-center">DANH SÁCH CÂU HỎI</h1>
+    <div class="d-flex justify-content-between mb-4">
+        <!-- Nút Thêm Câu Hỏi -->
+        <a th:href="@{/quiz-questions/add/{quizId}(quizId=${quizId})}" class="btn btn-primary" sec:authorize="hasAnyAuthority('ADMIN')">
+            <i class="fas fa-plus-circle"></i> Thêm Câu Hỏi
+        </a>
+        <!-- Nút Quay lại -->
+        <a th:href="@{/quizzes/list/{courseId}(courseId=${courseId})}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Quay Lại
+        </a>
+    </div>
+    <table class="table table-bordered table-striped">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Nội Dung</th>
+            <th>Thời gian tạo</th>
+            <th>Đáp Án Đúng</th>
+            <th>Hành Động</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="question, iterStat : ${quizQuestions}">
+            <td th:text="${iterStat.index + 1}"></td>
+            <td th:text="${question.content}"></td>
+            <td th:if="${question.creationTime != null}" th:text="${#temporals.format(question.creationTime, 'dd/MM/yyyy HH:mm:ss')}"></td>
+            <td th:if="${question.creationTime == null}">Chưa xác định</td>
+            <td th:text="${question.correctOption}"></td>
+            <td>
+                <!-- Nút Sửa -->
+                <a th:href="@{/quiz-questions/edit/{id}(id=${question.id})}" class="btn btn-warning btn-sm" sec:authorize="hasAnyAuthority('ADMIN')">
+                    <i class="fas fa-edit"></i> Sửa
+                </a>
+                <!-- Nút Xóa -->
+                <a th:href="@{/quiz-questions/delete/{id}(id=${question.id})}" class="btn btn-danger btn-sm"
+                   onclick="return confirm('Bạn có chắc muốn xóa câu hỏi này?')" sec:authorize="hasAnyAuthority('ADMIN')">
+                    <i class="fas fa-trash-alt"></i> Xóa
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Nút quay về đầu trang -->
+<button class="back-to-top" id="backToTop">
+    <i class="fa fa-chevron-up"></i>
+</button>
+
+<script>
+    // Hiển thị nút quay về đầu trang khi cuộn
+    const backToTopButton = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) {
+            backToTopButton.classList.add('show');
+        } else {
+            backToTopButton.classList.remove('show');
+        }
+    });
+
+    // Cuộn mượt mà về đầu trang khi nhấn nút
+    backToTopButton.addEventListener('click', () => {
+        document.documentElement.classList.add('scroll-animation'); // Thêm hiệu ứng
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        // Xóa hiệu ứng sau khi hoàn tất
+        setTimeout(() => {
+            document.documentElement.classList.remove('scroll-animation');
+        }, 1000);
+    });
+</script>
+
+<th:block th:replace="layout::footer"></th:block>
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

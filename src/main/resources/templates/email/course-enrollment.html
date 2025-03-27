@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Đăng ký khóa học thành công</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .email-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #ffffff;
+            border: 1px solid #dddddd; /* Đường viền */
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .email-header {
+            background-color: #6a11cb;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 3px solid #2575fc; /* Đường viền dưới tiêu đề */
+        }
+
+        .email-header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+        }
+
+        .email-body {
+            padding: 20px;
+        }
+
+        .email-body h2 {
+            color: #34495e;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .course-details, .user-details {
+            margin-bottom: 20px;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .course-details span, .user-details span {
+            font-weight: bold;
+            color: #34495e;
+        }
+
+        .email-footer {
+            background-color: #f4f4f4;
+            padding: 15px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            border-top: 1px solid #dddddd; /* Đường viền trên footer */
+        }
+
+        .email-footer a {
+            color: #6a11cb;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<div class="email-container">
+    <div class="email-header">
+        <h1>Đăng Ký Khóa Học Thành Công</h1>
+    </div>
+    <div class="email-body">
+        <h2>Xin chào, <span th:text="${userName}">Tên người dùng</span>!</h2>
+        <p>Bạn đã đăng ký thành công khóa học <span th:text="${courseName}">Tên khóa học</span> trên hệ thống LMS của chúng tôi.</p>
+
+        <div class="user-details">
+            <h3>Thông tin của bạn:</h3>
+            <p><span>Họ và tên:</span> <span th:text="${userName}">Tên người dùng</span></p>
+            <p><span>Email:</span> <span th:text="${userEmail}">Email người dùng</span></p>
+            <p><span>Số điện thoại:</span> <span th:text="${userPhone}">Số điện thoại</span></p>
+        </div>
+
+        <div class="course-details">
+            <h3>Thông tin khóa học:</h3>
+            <p><span>Tên khóa học:</span> <span th:text="${courseName}">Tên khóa học</span></p>
+            <p><span>Mô tả:</span> <span th:text="${courseDescription}">Mô tả khóa học</span></p>
+            <p><span>Thời lượng:</span> <span th:text="${courseDuration}">Thời lượng</span> giờ</p>
+            <p><span>Ngày bắt đầu:</span> <span th:text="${courseStartDate}">Ngày bắt đầu</span></p>
+        </div>
+
+        <p>Cảm ơn bạn đã tin tưởng và sử dụng dịch vụ của chúng tôi. Chúc bạn học tập hiệu quả!</p>
+    </div>
+    <div class="email-footer">
+        <p>Truy cập <a href="https://lms.example.com">hệ thống LMS</a> để xem thêm thông tin chi tiết.</p>
+    </div>
+</div>
+</body>
+</html>

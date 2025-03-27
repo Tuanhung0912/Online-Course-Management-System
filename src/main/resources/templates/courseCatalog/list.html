@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách danh mục</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <th:block th:replace="layout :: link-css"></th:block>
+    <link th:fragment="link-css" rel="stylesheet" th:href="@{/css/style.css}">
+    <link th:fragment="link-css" rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+        }
+
+        /* Tiêu đề */
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #007bff, #6a11cb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .title-underline {
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(45deg, #007bff, #6a11cb);
+            border-radius: 10px;
+        }
+
+        /* Table Header */
+        .table-header {
+            background: linear-gradient(45deg, #007bff, #0056b3);
+        }
+
+        /* Table Rows */
+        .table-row {
+            transition: all 0.3s ease;
+        }
+
+        .table-row:hover {
+            background-color: #f8f9fa;
+            transform: translateY(-3px);
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .table th, .table td {
+            text-align: center;
+            padding: 12px;
+        }
+
+        /* Nút Hành Động */
+        .btn-action {
+            font-size: 0.9rem;
+            border-radius: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-edit {
+            background: linear-gradient(45deg, #28a745, #218838);
+            color: #fff;
+            border: none;
+        }
+
+        .btn-edit:hover {
+            background: linear-gradient(45deg, #218838, #28a745);
+            transform: scale(1.05);
+        }
+
+        .btn-delete {
+            background: linear-gradient(45deg, #dc3545, #c82333);
+            color: #fff;
+            border: none;
+        }
+
+        .btn-delete:hover {
+            background: linear-gradient(45deg, #c82333, #dc3545);
+            transform: scale(1.05);
+        }
+
+        /* Nút Thêm Mới */
+        .btn-primary {
+            background: linear-gradient(45deg, #28a745, #218838);
+            color: #fff;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 30px;
+            text-transform: uppercase;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .btn-primary i {
+            font-size: 1.3rem;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #218838, #28a745);
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(45deg, #6a11cb, #2575fc);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            font-size: 1.5rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+        }
+        .back-to-top.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .back-to-top:hover {
+            transform: scale(1.2);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Hiệu ứng cuộn */
+        .scroll-animation {
+            animation: scrollToTop 1s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        @keyframes scrollToTop {
+            from {
+                transform: translateY(300px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+<th:block th:replace="layout :: header"></th:block>
+<div class="container mt-5">
+    <!-- Tiêu đề được cải tiến -->
+    <div class="text-center mb-4">
+        <h1 class="section-title">DANH SÁCH DANH MỤC</h1>
+        <hr class="title-underline mx-auto">
+    </div>
+
+    <!-- Nút Thêm Mới -->
+    <div class="d-flex justify-content-center mb-4" sec:authorize="hasAnyAuthority('ADMIN')">
+        <a class="btn btn-primary btn-lg shadow-lg" th:href="@{/courseCatalogs/add}">
+            <i class="fas fa-plus-circle me-2"></i> Thêm Mới
+        </a>
+    </div>
+
+    <!-- Bảng Table -->
+    <div class="table-responsive shadow-lg rounded">
+        <table class="table table-hover table-borderless align-middle">
+            <thead class="table-header text-white">
+            <tr>
+                <th>ID</th>
+                <th>Tên Danh Mục</th>
+                <th sec:authorize="hasAnyAuthority('ADMIN')">Chức Năng</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="courseCatalog : ${courseCatalogs}" class="table-row">
+                <td th:text="${courseCatalog.id}"></td>
+                <td th:text="${courseCatalog.name}" class="fw-bold text-secondary"></td>
+                <td sec:authorize="hasAnyAuthority('ADMIN')">
+                    <a th:href="@{/courseCatalogs/edit/{id}(id=${courseCatalog.id})}"
+                       class="btn btn-sm btn-action btn-edit me-2">
+                        <i class="fas fa-edit"></i> Sửa
+                    </a>
+                    <a th:href="@{/courseCatalogs/delete/{id}(id=${courseCatalog.id})}"
+                       class="btn btn-sm btn-action btn-delete"
+                       onclick="return confirm('Bạn có chắc chắn muốn xóa?')">
+                        <i class="fas fa-trash-alt"></i> Xóa
+                    </a>
+                </td>
+            </tr>
+            <!-- Thông báo khi không có dữ liệu -->
+            <tr th:if="${courseCatalogs.isEmpty()}">
+                <td colspan="3" class="text-center text-muted py-4">
+                    <i class="fas fa-info-circle"></i> Không có danh mục nào được tìm thấy.
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Nút quay về đầu trang -->
+<button class="back-to-top" id="backToTop">
+    <i class="fa fa-chevron-up"></i>
+</button>
+
+<script>
+    // Hiển thị nút quay về đầu trang khi cuộn
+    const backToTopButton = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) {
+            backToTopButton.classList.add('show');
+        } else {
+            backToTopButton.classList.remove('show');
+        }
+    });
+
+    // Cuộn mượt mà về đầu trang khi nhấn nút
+    backToTopButton.addEventListener('click', () => {
+        document.documentElement.classList.add('scroll-animation'); // Thêm hiệu ứng
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        // Xóa hiệu ứng sau khi hoàn tất
+        setTimeout(() => {
+            document.documentElement.classList.remove('scroll-animation');
+        }, 1000);
+    });
+</script>
+
+
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<th:block th:replace="layout :: footer"></th:block>
+</body>
+</html>

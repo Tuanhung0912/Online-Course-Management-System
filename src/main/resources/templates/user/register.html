@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link th:fragment="link-css" rel="icon" th:href="@{/assets/img/favicon.png}">
+    <link th:fragment="link-css" rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+    <!-- FontAwesome CSS -->
+    <link th:fragment="link-css" rel="stylesheet" th:href="@{/assets/css/all.min.css}">
+    <link th:fragment="link-css" rel="stylesheet" th:href="@{/assets/css/uf-style.css}">
+    <title>Đăng Ký</title>
+</head>
+<body>
+<div class="uf-form-signin">
+    <div class="text-center">
+        <a href="https://uifresh.net/"><img src="./assets/img/Logo_edu_rm.png" alt="" width="150" height="150"></a>
+        <h1 class="text-white h3">Đăng Ký</h1>
+    </div>
+    <form class="mt-4" th:action="@{/register}" th:object="${user}" method="post">
+        <div class="input-group uf-input-group input-group-lg mb-3">
+            <span class="input-group-text fa fa-user"></span>
+            <input type="text" class="form-control" th:field="*{name}" id="name" placeholder="Your name">
+            <span class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
+        </div>
+        <div class="input-group uf-input-group input-group-lg mb-3">
+            <span class="input-group-text fa fa-envelope"></span>
+            <input type="text" class="form-control" th:field="*{email}" id="email" placeholder="Email address">
+            <span class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+        </div>
+        <div class="input-group uf-input-group input-group-lg mb-3">
+            <span class="input-group-text fa fa-user"></span>
+            <input type="text" class="form-control" th:field="*{username}" id="username" placeholder="Username">
+            <span class="text-danger" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></span>
+        </div>
+        <div class="input-group uf-input-group input-group-lg mb-3">
+            <span class="input-group-text fa fa-lock"></span>
+            <input type="password" class="form-control" th:field="*{password}" id="password" placeholder="Password">
+            <span class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
+        </div>
+        <div class="d-grid mb-4">
+            <button type="submit" class="btn uf-btn-primary btn-lg">Đăng Ký</button>
+        </div>
+        <div class="mt-4 text-center">
+            <span class="text-white">Đã Có Tài khoản?</span>
+            <a href="/login">Login</a>
+        </div>
+    </form>
+</div>
+
+<!-- JavaScript -->
+
+<!-- Separate Popper and Bootstrap JS -->
+<script th:src="@{/assets/js/popper.min.js}"></script>
+<script th:src="@{/assets/js/bootstrap.min.js}"></script>
+</body>
+</html>

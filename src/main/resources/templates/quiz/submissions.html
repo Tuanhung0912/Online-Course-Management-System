@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh Sách Lần Gửi Bài</title>
+    <th:block th:replace="layout :: link-css"></th:block>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+        }
+
+        h1.title-enhanced {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #ffffff;
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            text-align: center;
+            padding: 15px 20px;
+            border-radius: 10px;
+            position: relative;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        h1.title-enhanced::before,
+        h1.title-enhanced::after {
+            content: "";
+            position: absolute;
+            height: 4px;
+            width: 80px;
+            background: linear-gradient(to right, #ff416c, #ff4b2b);
+            border-radius: 5px;
+        }
+
+        h1.title-enhanced::before {
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        h1.title-enhanced::after {
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .container mt-5 {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .table {
+            border-collapse: separate;
+            border-spacing: 0;
+            background: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .table thead {
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            color: white;
+            text-align: center;
+        }
+        .table thead th {
+            padding: 12px;
+            font-size: 1rem;
+        }
+        .table tbody tr {
+            transition: background 0.3s, transform 0.2s;
+            text-align: center;
+        }
+        .table tbody tr:hover {
+            background: #f1f3f5;
+            transform: translateX(5px);
+        }
+        .table tbody td {
+            padding: 10px;
+            vertical-align: middle;
+        }
+        .badge {
+            font-size: 0.9rem;
+            padding: 5px 10px;
+            border-radius: 10px;
+        }
+        .badge.bg-success {
+            background: #28a745;
+        }
+        .badge.bg-danger {
+            background: #dc3545;
+        }
+
+        /* Nút quay về đầu trang */
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(45deg, #6a11cb, #2575fc);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            font-size: 1.5rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+        }
+        .back-to-top.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .back-to-top:hover {
+            transform: scale(1.2);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Hiệu ứng cuộn */
+        .scroll-animation {
+            animation: scrollToTop 1s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        @keyframes scrollToTop {
+            from {
+                transform: translateY(300px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+    </style>
+</head>
+<body>
+<div th:replace="layout::header"></div>
+<div class="container mt-5">
+    <h1 class="mb-4 title-enhanced">DANH SÁCH GỬI BÀI</h1>
+
+    <!-- Bảng hiển thị kết quả -->
+    <table class="table table-bordered table-hover mt-4">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Người dùng</th>
+            <th>Tên Bài Trắc Nghiệm</th>
+            <th>Lưu trữ vào lúc</th>
+            <th>Kết quả</th>
+            <th>Chức năng</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="entry, iterStat : ${submissionsGroupedByUser.entrySet()}">
+            <td th:text="${iterStat.count}"></td>
+            <td th:text="${entry.value[0].user.username}"></td>
+            <td th:text="${quiz.title}"></td>
+            <td th:text="${#temporals.format(entry.value[0].submitTime, 'dd/MM/yyyy HH:mm:ss')}"></td>
+            <td th:text="${correctAndTotalMap[entry.key]}"></td>
+            <td>
+                <!-- Chỉ hiển thị nút nếu có quyền xem -->
+                <a th:if="${canViewDetails[entry.key]}"
+                   th:href="@{/quizzes/details/{id}(id=${entry.key}, quizId=${quiz.id})}"
+                   class="btn btn-primary btn-sm">
+                    <i class="fas fa-eye"></i> Xem Chi Tiết
+                </a>
+                <!-- Hiển thị biểu tượng khóa nếu không có quyền -->
+                <span th:if="${!canViewDetails[entry.key]}"
+                      class="text-muted">
+                <i class="fas fa-lock"></i> Không thể xem
+            </span>
+            </td>
+        </tr>
+        <tr th:if="${submissionsGroupedByUser.isEmpty()}">
+            <td colspan="5" class="text-center">Không có bài nộp nào được tìm thấy.</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Nút quay về đầu trang -->
+<button class="back-to-top" id="backToTop">
+    <i class="fa fa-chevron-up"></i>
+</button>
+
+<script>
+    // Hiển thị nút quay về đầu trang khi cuộn
+    const backToTopButton = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) {
+            backToTopButton.classList.add('show');
+        } else {
+            backToTopButton.classList.remove('show');
+        }
+    });
+
+    // Cuộn mượt mà về đầu trang khi nhấn nút
+    backToTopButton.addEventListener('click', () => {
+        document.documentElement.classList.add('scroll-animation'); // Thêm hiệu ứng
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        // Xóa hiệu ứng sau khi hoàn tất
+        setTimeout(() => {
+            document.documentElement.classList.remove('scroll-animation');
+        }, 1000);
+    });
+</script>
+
+<div th:replace="layout::footer"></div>
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

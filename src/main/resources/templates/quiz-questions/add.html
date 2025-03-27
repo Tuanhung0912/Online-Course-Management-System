@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Thêm Câu Hỏi</title>
+    <th:block th:replace="layout :: link-css"></th:block>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link th:fragment="link-css" rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link th:fragment="link-css" rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        a {
+            text-decoration: none;
+        }
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+        }
+        .question-container {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 20px 30px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 50px auto;
+            max-width: 1000px; /* Giới hạn chiều rộng container */
+        }
+        h1 {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #343a40;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        .form-label {
+            font-weight: bold;
+            color: #495057;
+        }
+        .form-control, .form-select {
+            border-radius: 10px;
+            padding: 10px;
+            font-size: 1rem;
+            margin-top: 5px;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+        .btn-success {
+            background: linear-gradient(45deg, #28a745, #218838);
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 30px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            color: #ffffff;
+        }
+        .btn-success:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+<th:block th:replace="layout :: header"></th:block>
+
+<div class="question-container">
+    <!-- Tiêu đề -->
+    <h1>THÊM CÂU HỎI MỚI</h1>
+
+    <!-- Form thêm câu hỏi -->
+    <form th:action="@{/quiz-questions/add}" method="post" enctype="multipart/form-data">
+        <!-- ID Quiz -->
+        <input type="hidden" name="quizId" th:value="${quizId}">
+
+        <!-- Nội dung câu hỏi -->
+        <div class="mb-3">
+            <label for="content" class="form-label">Nội Dung Câu Hỏi</label>
+            <textarea class="form-control" id="content" name="content" rows="3" placeholder="Nhập nội dung câu hỏi" required></textarea>
+        </div>
+
+        <!-- Đáp án A -->
+        <div class="mb-3">
+            <label for="optionA" class="form-label">Đáp Án A</label>
+            <input type="text" class="form-control" id="optionA" name="optionA" placeholder="Nhập đáp án A" required>
+        </div>
+
+        <!-- Đáp án B -->
+        <div class="mb-3">
+            <label for="optionB" class="form-label">Đáp Án B</label>
+            <input type="text" class="form-control" id="optionB" name="optionB" placeholder="Nhập đáp án B" required>
+        </div>
+
+        <!-- Đáp án C -->
+        <div class="mb-3">
+            <label for="optionC" class="form-label">Đáp Án C</label>
+            <input type="text" class="form-control" id="optionC" name="optionC" placeholder="Nhập đáp án C" required>
+        </div>
+
+        <!-- Đáp án D -->
+        <div class="mb-3">
+            <label for="optionD" class="form-label">Đáp Án D</label>
+            <input type="text" class="form-control" id="optionD" name="optionD" placeholder="Nhập đáp án D" required>
+        </div>
+
+        <!-- Đáp án đúng -->
+        <div class="mb-3">
+            <label for="correctOption" class="form-label">Đáp Án Đúng</label>
+            <select class="form-select" id="correctOption" name="correctOption" required>
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+                <option value="D">D</option>
+            </select>
+        </div>
+
+        <!-- Nút lưu -->
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-save"></i> Lưu Câu Hỏi
+            </button>
+        </div>
+    </form>
+</div>
+<th:block th:replace="layout :: footer"></th:block>
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

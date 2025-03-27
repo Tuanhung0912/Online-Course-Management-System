@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forbidden</title>
+    <th:block th:replace="~{layout::link-css}"></th:block>
+    <link th:fragment="link-css" rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link th:fragment="link-css" rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .error-container {
+            margin-top: 5rem;
+            text-align: center;
+            color: #343a40;
+        }
+
+        .error-code {
+            font-size: 8rem;
+            font-weight: bold;
+            color: #dc3545;
+            text-shadow: 2px 2px 10px rgba(220, 53, 69, 0.5);
+        }
+
+        .error-icon {
+            font-size: 6rem;
+            color: #dc3545;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+
+        .error-message {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+
+        .btn-back {
+            font-size: 1.1rem;
+            font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 30px;
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            color: #ffffff;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border: none;
+        }
+
+        .btn-back:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            color: #fff;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        a {
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<th:block th:replace="layout::header"></th:block>
+<div class="error-container">
+    <!-- Biểu tượng Lỗi -->
+    <i class="fas fa-exclamation-triangle error-icon"></i>
+
+    <!-- Mã lỗi -->
+    <div class="error-code">403</div>
+
+    <!-- Thông báo lỗi -->
+    <div class="error-message">
+        <p><span class="text-danger fw-bold">Lỗi!</span> Bạn không có quyền truy cập vào trang này.</p>
+        <p class="text-muted">Hãy liên hệ với quản trị viên nếu bạn nghĩ đây là nhầm lẫn.</p>
+    </div>
+
+    <!-- Nút Trở về -->
+    <a href="/" class="btn btn-back">
+        <i class="fas fa-home me-2"></i> Trở về trang chủ
+    </a>
+</div>
+
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<th:block th:replace="layout::footer"></th:block>
+</body>
+</html>

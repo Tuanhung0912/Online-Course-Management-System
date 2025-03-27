@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Chỉnh sửa thông tin người dùng</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <th:block th:replace="layout :: link-css"></th:block>
+    <link th:fragment="link-css" rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link th:fragment="link-css" rel="stylesheet" th:href="@{/css/profile.css}">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        a {
+            text-decoration: none;
+        }
+
+        /* Căn chỉnh và làm đẹp liên kết */
+        .social-links {
+            font-family: "Arial", sans-serif;
+        }
+
+        .social-link {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+            transition: color 0.3s ease;
+            text-decoration: none;
+        }
+
+        .social-link:hover {
+            color: #007bff; /* Màu xanh khi hover */
+            text-decoration: underline;
+        }
+
+        /* Icon căn chỉnh đẹp */
+        .social-links .fa-2x {
+            width: 40px; /* Đảm bảo các icon có kích thước đều nhau */
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Khoảng cách và bố cục */
+        .social-links div {
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .social-links div:last-child {
+            border-bottom: none;
+        }
+
+        .social-link a {
+            margin-left: 10px;
+        }
+
+        /* Làm nổi bật icon ở cuối */
+        .mt-4 .fa-share-alt {
+            color: #6c757d; /* Màu xám tinh tế */
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        .mt-4 .fa-share-alt:hover {
+            color: #007bff; /* Màu xanh khi hover */
+            transform: scale(1.1); /* Hiệu ứng phóng to */
+        }
+    </style>
+</head>
+<body>
+<th:block th:replace="layout::header"></th:block>
+<div class="container rounded bg-white mt-5 mb-5">
+    <div class="row">
+        <div class="col-md-3 border-right">
+            <div class="d-flex flex-column align-items-center text-center p-3 py-5">
+                <!--img class="rounded-circle mt-5" width="150px" alt="avatar Image" th:src="${user.imageData}"-->
+                <img th:src="${user.imageData != null && user.imageData != '' ? user.imageData : '/images/avatar.png'}"
+                     alt="Avatar Image" class="rounded-circle mt-5" width="150px">
+                <span class="font-weight-bold" th:text="${user.username}"></span>
+                <span class="text-black-50" th:text="${user.email}"></span>
+                <span></span>
+            </div>
+        </div>
+        <div class="col-md-5 border-right">
+            <div class="p-3 py-5">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="text-right">Sửa thông tin tài khoản</h4>
+                </div>
+                <div class="row mt-3">
+                    <form th:action="@{/user/edit/{id}(id=${user.id})}" th:object="${user}" method="post" novalidate enctype="multipart/form-data">
+                        <div class="col-md-12">
+                            <label class="labels">Họ Tên Người Dùng</label>
+                            <input type="text" class="form-control" th:field="*{name}" id="name" name="name"
+                                   th:disabled="${isOAuth2User}" />
+                            <span class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="labels">Username</label>
+                            <input type="text" class="form-control" th:field="*{username}" id="username" name="username"
+                                   th:disabled="${isOAuth2User}" />
+                            <span class="text-danger" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></span>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="labels">Email</label>
+                            <input type="email" class="form-control" th:field="*{email}" id="email" name="email"
+                                   th:disabled="${isOAuth2User}" />
+                            <span class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="labels">Password</label>
+                            <div th:if="${isOAuth2User}">
+                                <input type="password" class="form-control" th:id="'password-oauth'" name="password" value="********" disabled />
+                                <small class="text-muted">Không thể chỉnh sửa thông tin khi đăng nhập bằng Google.</small>
+                            </div>
+                            <div th:if="${!isOAuth2User}">
+                                <input type="password" th:id="'password-standard'" name="password" th:field="*{password}" class="form-control" />
+                                <span class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="labels">Số Điện Thoại</label>
+                            <input type="text" id="phoneNumber" name="phoneNumber" th:field="*{phoneNumber}"
+                                   class="form-control" th:placeholder="${user.phoneNumber != null && user.phoneNumber != '' ? '' : 'Chưa có thông tin'}"/>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="labels">Địa Chỉ</label>
+                            <input type="text" id="address" name="address" th:field="*{address}"
+                                   class="form-control" th:placeholder="${user.address != null && user.address != '' ? '' : 'Chưa có thông tin'}"/>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="image" class="labels">Ảnh Đại diện:</label>
+                            <input type="file" id="image" name="image" class="form-control"/>
+                        </div>
+                        <div class="mt-5 text-center">
+                            <button class="btn btn-primary profile-button" type="submit">Save Profile</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-3 py-5">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="text-right">Kết Nối Mạng Xã Hội</h4>
+                </div>
+                <div class="social-links">
+                    <div class="d-flex align-items-center justify-content-start mb-3">
+                        <i class="fab fa-facebook fa-2x text-primary mr-3"></i>
+                        <a href="https://www.facebook.com" target="_blank" class="social-link">
+                            Facebook
+                        </a>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-start mb-3">
+                        <i class="fab fa-twitter fa-2x text-info mr-3"></i>
+                        <a href="https://www.twitter.com" target="_blank" class="social-link">
+                            Twitter
+                        </a>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-start mb-3">
+                        <i class="fab fa-instagram fa-2x text-danger mr-3"></i>
+                        <a href="https://www.instagram.com" target="_blank" class="social-link">
+                            Instagram
+                        </a>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-start mb-3">
+                        <i class="fab fa-linkedin fa-2x text-primary mr-3"></i>
+                        <a href="https://www.linkedin.com" target="_blank" class="social-link">
+                            LinkedIn
+                        </a>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-start mb-3">
+                        <i class="fab fa-youtube fa-2x text-danger mr-3"></i>
+                        <a href="https://www.youtube.com" target="_blank" class="social-link">
+                            YouTube
+                        </a>
+                    </div>
+                </div>
+                <div class="mt-4 text-center">
+                    <i class="fas fa-share-alt fa-5x text-secondary"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const isOAuth2User = [[${isOAuth2User}]];
+        if (isOAuth2User) {
+            document.getElementById("name").setAttribute("disabled", "true");
+            document.getElementById("username").setAttribute("disabled", "true");
+            document.getElementById("email").setAttribute("disabled", "true");
+            document.getElementById("password").setAttribute("disabled", "true");
+        }
+    });
+</script>
+
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<th:block th:replace="layout::footer"></th:block>
+</body>
+</html>

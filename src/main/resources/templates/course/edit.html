@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <th:block th:replace="layout::link-css"></th:block>
+    <title>Sửa Thông Tin Khóa Học</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link th:fragment="link-css" rel="stylesheet" th:href="@{/css/style.css}">
+    <link th:fragment="link-css" rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .container-form {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 30px 40px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .container-form:hover {
+            transform: scale(1.01);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            color: #343a40;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        h1::after {
+            content: "";
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 10px;
+        }
+
+        label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 5px;
+        }
+
+        .form-control {
+            border: 2px solid #e2e6ea;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 10px rgba(0, 123, 255, 0.3);
+            transform: scale(1.02);
+        }
+
+        textarea {
+            resize: none;
+        }
+
+        input[type="file"] {
+            padding: 10px;
+            border: 2px dashed #d1d3e2;
+            background: #f8f9fa;
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+
+        input[type="file"]:hover {
+            background: #e2e6ea;
+            border-color: #007bff;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            border: none;
+            font-size: 1.1rem;
+            font-weight: bold;
+            padding: 10px 30px;
+            border-radius: 30px;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(45deg, #0056b3, #003f7f);
+        }
+
+        .text-center a {
+            font-weight: 600;
+            color: #007bff;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .text-center a:hover {
+            color: #0056b3;
+            text-decoration: underline;
+        }
+
+        .image-preview {
+            display: flex;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .image-preview img {
+            max-width: 200px;
+            border: 2px solid #e2e6ea;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        a {
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<th:block th:replace="layout::header"></th:block>
+<div class="container mt-5">
+    <div class="container-form">
+        <h1>SỬA THÔNG TIN KHÓA HỌC</h1>
+        <form th:action="@{/courses/edit/{id}(id=${course.id})}" th:object="${course}" method="post" novalidate enctype="multipart/form-data">
+            <!-- Tên khóa học -->
+            <div class="col-12 mb-3">
+                <label for="name">Tên Khóa Học:</label>
+                <input type="text" class="form-control" id="name" th:field="*{name}" placeholder="Nhập tên khóa học">
+                <div class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+            </div>
+
+            <!-- Mô tả -->
+            <div class="col-12 mb-3">
+                <label for="description">Mô Tả:</label>
+                <textarea class="form-control" id="description" th:field="*{description}" rows="4" placeholder="Nhập mô tả khóa học"></textarea>
+                <div class="text-danger" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
+            </div>
+
+            <!-- Thời lượng -->
+            <div class="col-12 mb-3">
+                <label for="duration">Thời Lượng Khóa Học (giờ):</label>
+                <input type="number" class="form-control" id="duration" th:field="*{duration}" min="1" placeholder="Nhập thời lượng">
+                <div class="text-danger" th:if="${#fields.hasErrors('duration')}" th:errors="*{duration}"></div>
+            </div>
+
+            <!-- Loại khóa học -->
+            <div class="col-12 mb-3">
+                <label for="courseCatalog">Loại Khóa Học:</label>
+                <select class="form-control" id="courseCatalog" th:field="*{courseCatalog.id}">
+                    <option value="">-- Chọn Loại Khóa Học --</option>
+                    <option th:each="catalog : ${courseCatalogs}" th:value="${catalog.id}" th:text="${catalog.name}"></option>
+                </select>
+            </div>
+
+            <!-- Ảnh khóa học -->
+            <div class="col-12 mb-3">
+                <label for="image">Ảnh Khóa Học:</label>
+                <input type="file" id="image" name="image" class="form-control" onchange="previewImage(event)">
+                <div class="image-preview" id="preview-container">
+                    <img th:src="@{/images/default-placeholder.png}" id="preview-image" alt="Preview Image">
+                </div>
+            </div>
+
+            <!-- Nút cập nhật -->
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Cập Nhật
+                </button>
+            </div>
+        </form>
+
+        <!-- Nút quay lại -->
+        <div class="text-center mt-3">
+            <a th:href="@{/courses}">
+                <i class="fas fa-arrow-left"></i> Quay lại danh sách
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Script Preview Ảnh -->
+<script>
+    function previewImage(event) {
+        const previewContainer = document.getElementById('preview-container');
+        const previewImage = document.getElementById('preview-image');
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImage.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+</script>
+
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<th:block th:replace="layout::footer"></th:block>
+</body>
+</html>

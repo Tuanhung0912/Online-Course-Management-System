@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách khóa học</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <th:block th:replace="layout::link-css"></th:block>
+    <link th:fragment="link-css" rel="stylesheet" th:href="@{/css/style.css}">
+    <link th:fragment="link-css" rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        a {
+            text-decoration: none;
+        }
+
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-10px); /* Di chuyển card lên trên khi hover */
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); /* Tạo hiệu ứng bóng mờ */
+        }
+
+        .course-image {
+            height: 200px;
+            width: 100%;
+            object-fit: cover;
+        }
+
+        .btn-view-details {
+            background-color: #007bff;
+            color: #fff;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-view-details:hover {
+            background-color: #0056b3;
+            color: #fff;
+        }
+
+        .card-body p {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+            color: #555;
+        }
+
+        .card-body p i {
+            color: #007bff;
+            font-size: 1.2rem;
+        }
+
+        .card-title {
+            margin-bottom: 12px;
+        }
+
+        .card-body .rating-info {
+            display: flex;
+            align-items: center;
+            /*gap: 5px;*/
+            font-size: 0.95rem;
+            color: #555;
+            margin-bottom: 12px;
+        }
+
+        .rating-info i {
+            color: #ffcc00; /* Màu vàng cho biểu tượng sao */
+            font-size: 1.2rem; /* Đảm bảo biểu tượng sao nổi bật */
+        }
+
+        .rating-info span {
+            font-weight: bold; /* Làm nổi bật số lượng đánh giá */
+            color: #007bff; /* Màu xanh cho số lượng đánh giá */
+        }
+
+        .rating-info strong {
+            font-weight: bold; /* Làm nổi bật số lượng đánh giá */
+            color: #007bff; /* Màu xanh cho số lượng đánh giá */
+        }
+        .card-text {
+            display: block;
+            white-space: nowrap; /* Không cho phép xuống dòng */
+            overflow: hidden; /* Ẩn nội dung tràn ra ngoài */
+            text-overflow: ellipsis; /* Thêm dấu ba chấm */
+        }
+        .input-group .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(45deg, #6a11cb, #2575fc);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            font-size: 1.5rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+        }
+        .back-to-top.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .back-to-top:hover {
+            transform: scale(1.2);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Hiệu ứng cuộn */
+        .scroll-animation {
+            animation: scrollToTop 1s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        @keyframes scrollToTop {
+            from {
+                transform: translateY(300px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Tiêu đề Danh sách Khóa học */
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            display: inline-block;
+            padding-bottom: 10px;
+            color: #007bff;
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-title::after {
+            content: "";
+            width: 100px;
+            height: 3px;
+            background-color: #6a11cb;
+            display: block;
+            margin: 8px auto 0;
+            border-radius: 2px;
+        }
+
+        /* Dropdown Chọn danh mục */
+        .catalog-label {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #555;
+            display: flex;
+            align-items: center;
+        }
+
+        .custom-dropdown {
+            border: 2px solid #007bff;
+            border-radius: 8px;
+            font-size: 1rem;
+            padding: 8px 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .custom-dropdown:focus,
+        .custom-dropdown:hover {
+            border-color: #6a11cb;
+            box-shadow: 0 4px 10px rgba(106, 17, 203, 0.3);
+            outline: none;
+        }
+
+        .custom-dropdown option {
+            font-size: 1rem;
+            padding: 8px;
+        }
+
+        /* Nút Thêm Mới */
+        .btn-add-new {
+            background: linear-gradient(135deg, #6a11cb, #2575fc); /* Gradient màu xanh tím */
+            color: #fff;
+            font-size: 1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px; /* Bo tròn nút */
+            padding: 10px 20px;
+            width: 200px; /* Chiều rộng vừa đủ */
+            min-width: 120px; /* Chiều rộng tối thiểu */
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Đổ bóng nhẹ */
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+
+        .btn-add-new i {
+            font-size: 1.2rem;
+            margin-right: 8px; /* Tạo khoảng cách giữa icon và chữ */
+        }
+
+        .btn-add-new:hover {
+            background: linear-gradient(135deg, #2575fc, #6a11cb); /* Đảo gradient màu */
+            color: #fff;
+            transform: translateY(-3px); /* Di chuyển nhẹ lên trên khi hover */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); /* Tăng bóng đổ */
+        }
+
+        .btn-add-new:active {
+            transform: scale(0.95); /* Hiệu ứng nhấn xuống */
+        }
+        /* Tùy chỉnh khung tìm kiếm */
+        .search-box {
+            max-width: 1000px; /* Giới hạn chiều rộng khung tìm kiếm */
+            margin: 0 auto; /* Căn giữa khung tìm kiếm */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
+            border-radius: 50px; /* Bo tròn khung */
+            overflow: hidden; /* Bo tròn các thành phần con */
+        }
+
+        .custom-search-input {
+            border: none;
+            font-size: 1rem;
+            padding: 12px 20px;
+            border-radius: 50px 0 0 50px; /* Bo tròn bên trái */
+            transition: box-shadow 0.3s ease, border 0.3s ease;
+        }
+
+        .custom-search-input:focus {
+            outline: none;
+            box-shadow: 0 0 8px rgba(0, 123, 255, 0.5); /* Viền sáng khi focus */
+            border: 1px solid #6a11cb;
+        }
+
+        .btn-search {
+            background: linear-gradient(135deg, #6a11cb, #2575fc); /* Gradient màu xanh tím */
+            color: #fff;
+            font-weight: bold;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 0 50px 50px 0; /* Bo tròn bên phải */
+            transition: all 0.3s ease;
+        }
+
+        .btn-search i {
+            margin-right: 5px; /* Khoảng cách giữa icon và chữ */
+        }
+
+        .btn-search:hover {
+            background: linear-gradient(135deg, #2575fc, #6a11cb); /* Đảo màu gradient */
+            transform: translateY(-2px); /* Nhấn nút lên nhẹ */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Tăng bóng đổ */
+        }
+    </style>
+</head>
+<body>
+<th:block th:replace="layout::header"></th:block>
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12 text-center mb-5">
+            <h1 class="section-title">
+                <span>Danh sách Khóa học</span>
+            </h1>
+
+            <!-- Kiểm tra và hiển thị thông báo -->
+            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+            <!-- Form tìm kiếm -->
+            <form th:action="@{/courses/search}" method="get" class="mb-4">
+                <div class="input-group search-box">
+                    <input type="text" name="keyword" class="form-control custom-search-input"
+                           placeholder="Nhập tên khóa học cần tìm..." aria-label="Search" aria-describedby="search-btn">
+                    <button class="btn btn-search" type="submit" id="search-btn">
+                        <i class="fas fa-search"></i> Tìm kiếm
+                    </button>
+                </div>
+            </form>
+            <form th:action="@{/courses/searchByCatalog}" method="get" class="mb-5">
+                <div class="form-group d-flex align-items-center justify-content-center">
+                    <label for="catalogId" class="catalog-label me-3">
+                        <i class="fas fa-list-ul me-2"></i>Chọn danh mục:
+                    </label>
+                    <select name="catalogId" id="catalogId" class="form-select custom-dropdown w-50" onchange="this.form.submit()">
+                        <option value="0" th:selected="${selectedCatalogId == null or selectedCatalogId == 0}">Tất cả</option>
+                        <option th:each="catalog : ${courseCatalogs}"
+                                th:value="${catalog.id}"
+                                th:text="${catalog.name}"
+                                th:selected="${selectedCatalogId == catalog.id}">
+                        </option>
+                    </select>
+                </div>
+            </form>
+            <div class="d-flex justify-content-center mb-4">
+                <a class="btn btn-add-new"
+                   th:href="@{/courses/add}" sec:authorize="hasAnyAuthority('ADMIN')">
+                    <i class="fas fa-plus-circle"></i> Thêm mới
+                </a>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4" th:each="course : ${courses}">
+            <div class="card h-100 shadow-sm">
+                <img th:src="${course.imageData}" alt="Course Image" class="card-img-top course-image">
+                <div class="card-body">
+                    <h3 class="card-title" th:text="${course.name}"></h3>
+
+                    <p class="card-text">
+                        <i class="fas fa-book"></i>
+                        <strong>Loại khóa học:</strong> <span th:text="${course.courseCatalog.name}"></span>
+                    </p>
+
+                    <p class="card-text">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Mô tả:</strong> <span th:text="${course.description}"></span>
+                    </p>
+
+                    <p class="card-text">
+                        <i class="fas fa-clock"></i>
+                        <strong>Thời lượng:</strong> <span th:text="${course.duration} + ' giờ'"></span>
+                    </p>
+
+                    <p class="card-text">
+                        <i class="fas fa-calendar-alt"></i>
+                        <strong>Thời gian tạo:</strong>
+                        <span th:if="${course.creationTime != null}" th:text="${#temporals.format(course.creationTime, 'dd/MM/yyyy HH:mm:ss')}"></span>
+                        <span th:if="${course.creationTime == null}">Chưa xác định</span>
+                    </p>
+
+                    <p class="card-text">
+                        <i class="fas fa-user"></i>
+                        <strong>Người tạo:</strong>
+                        <span th:if="${courseCreators[course.id] != null}" th:text="${courseCreators[course.id]}"></span>
+                        <span th:if="${courseCreators[course.id] == null}">Đang cập nhật</span>
+                    </p>
+
+                    <p class="card-text rating-info">
+                        <i class="fas fa-star"></i>
+                        <strong>Đánh giá:</strong>
+                        <span th:text="${courseRatings[course.id].averageRating != null ? #numbers.formatDecimal(courseRatings[course.id].averageRating, 1, 2) : '0.00'} + ' / 5'"></span>
+                        <span>(<span th:text="${courseRatings[course.id].ratingCount}">0</span> đánh giá)</span>
+                    </p>
+                    <a th:href="@{/courses/details/{id}(id=${course.id})}" class="btn btn-view-details btn-sm">
+                        <i class="fas fa-info-circle"></i> Xem Chi Tiết
+                    </a>
+                </div>
+                <div class="card-footer">
+                    <div sec:authorize="hasAnyAuthority('ADMIN')">
+                        <a th:href="@{/courses/edit/{id}(id=${course.id})}" class="btn btn-primary btn-sm me-2">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a th:href="@{/courses/delete/{id}(id=${course.id})}"
+                           class="btn btn-danger btn-sm"
+                           onclick="return confirm('Bạn có chắc chắn muốn xóa?')">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Nút quay về đầu trang -->
+<button class="back-to-top" id="backToTop">
+    <i class="fa fa-chevron-up"></i>
+</button>
+
+<script>
+    // Hiển thị nút quay về đầu trang khi cuộn
+    const backToTopButton = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) {
+            backToTopButton.classList.add('show');
+        } else {
+            backToTopButton.classList.remove('show');
+        }
+    });
+
+    // Cuộn mượt mà về đầu trang khi nhấn nút
+    backToTopButton.addEventListener('click', () => {
+        document.documentElement.classList.add('scroll-animation'); // Thêm hiệu ứng
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        // Xóa hiệu ứng sau khi hoàn tất
+        setTimeout(() => {
+            document.documentElement.classList.remove('scroll-animation');
+        }, 1000);
+    });
+</script>
+
+<th:block th:replace="layout::footer"></th:block>
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

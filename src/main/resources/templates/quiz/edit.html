@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Sửa Thông Tin Bài Tập Trắc Nghiệm</title>
+    <th:block th:replace="layout :: link-css"></th:block>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link th:fragment="link-css" rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link th:fragment="link-css" rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        a {
+            text-decoration: none;
+        }
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+        }
+        .quiz-edit-container {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 20px 30px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 50px auto;
+            max-width: 900px; /* Giới hạn chiều rộng */
+        }
+        h1 {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #343a40;
+            text-align: center;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        p.text-muted {
+            text-align: center;
+            font-size: 1rem;
+            color: #6c757d;
+        }
+        .form-label {
+            font-weight: bold;
+            color: #495057;
+        }
+        .form-control {
+            border-radius: 10px;
+            padding: 10px;
+            font-size: 1rem;
+            margin-top: 5px;
+        }
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+        .btn-warning {
+            background: linear-gradient(45deg, #ffc107, #e0a800);
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 30px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            color: #ffffff;
+        }
+        .btn-warning:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+<th:block th:replace="layout :: header"></th:block>
+
+<div class="quiz-edit-container">
+    <!-- Tiêu đề -->
+    <h1>SỬA THÔNG TIN BÀI TẬP</h1>
+    <p class="text-muted">Chỉnh sửa thông tin chi tiết của bài tập trắc nghiệm.</p>
+
+    <!-- Form sửa thông tin -->
+    <form th:action="@{/quizzes/edit/{id}(id=${quiz.id})}" th:object="${quiz}" method="post" class="mt-4" enctype="multipart/form-data">
+        <!-- ID khóa học -->
+        <input type="hidden" name="courseId" th:value="${courseId}" />
+
+        <!-- Tiêu đề -->
+        <div class="mb-3">
+            <label for="title" class="form-label">Tiêu đề</label>
+            <input type="text" id="title" name="title" th:field="*{title}" class="form-control" placeholder="Nhập tiêu đề" required>
+        </div>
+
+        <!-- Mô tả -->
+        <div class="mb-3">
+            <label for="description" class="form-label">Mô tả</label>
+            <textarea id="description" name="description" th:field="*{description}" class="form-control" rows="4" placeholder="Nhập mô tả bài tập"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="duration">Thời Lượng (phút):</label>
+            <input class="form-control" type="number" th:field="*{duration}" id="duration" min="1" placeholder="Nhập thời lượng">
+        </div>
+
+        <!-- Nút lưu -->
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-warning">
+                <i class="fas fa-save"></i> Cập Nhật
+            </button>
+        </div>
+    </form>
+</div>
+
+<th:block th:replace="layout :: footer"></th:block>
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

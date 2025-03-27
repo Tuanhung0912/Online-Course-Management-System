@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Chi tiết người dùng</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <th:block th:replace="layout :: link-css"></th:block>
+    <link th:fragment="link-css" rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link th:fragment="link-css" rel="stylesheet" th:href="@{/css/profile.css}">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        a {
+            text-decoration: none;
+        }
+
+        /* Căn chỉnh và làm đẹp liên kết */
+        .social-links {
+            font-family: "Arial", sans-serif;
+        }
+
+        .social-link {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+            transition: color 0.3s ease;
+            text-decoration: none;
+        }
+
+        .social-link a {
+            margin-left: 10px;
+        }
+
+        .social-link:hover {
+            color: #007bff; /* Màu xanh khi hover */
+            text-decoration: underline;
+        }
+
+        /* Icon căn chỉnh đẹp */
+        .social-links .fa-2x {
+            width: 40px; /* Đảm bảo các icon có kích thước đều nhau */
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Khoảng cách và bố cục */
+        .social-links div {
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .social-links div:last-child {
+            border-bottom: none;
+        }
+
+        /* Làm nổi bật icon ở cuối */
+        .mt-4 .fa-share-alt {
+            color: #6c757d; /* Màu xám tinh tế */
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        .mt-4 .fa-share-alt:hover {
+            color: #007bff; /* Màu xanh khi hover */
+            transform: scale(1.1); /* Hiệu ứng phóng to */
+        }
+
+    </style>
+</head>
+<body>
+<th:block th:replace="layout::header"></th:block>
+<div class="container rounded bg-white mt-5 mb-5">
+    <div class="row">
+        <div class="col-md-3 border-right">
+            <div class="d-flex flex-column align-items-center text-center p-3 py-5">
+                <img th:src="${user.imageData != null && user.imageData != '' ? user.imageData : '/images/avatar.png'}"
+                     alt="Avatar Image" class="rounded-circle mt-5" width="150px">
+                <span class="font-weight-bold" th:text="${user.username}"></span>
+                <span class="text-black-50" th:text="${user.email}"></span>
+                <span></span>
+            </div>
+        </div>
+        <div class="col-md-5 border-right">
+            <div class="p-3 py-5">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="text-right">Chi Tiết Tài Khoản</h4>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-12" th:action="@{/user/{id}(id=${user.id})}" th:object="${user}">
+                        <label class="labels">Họ Tên Người Dùng</label>
+                        <input type="text" class="form-control" th:field="*{name}" id="name" readonly />
+                    </div>
+                    <div class="col-md-12" th:action="@{/user/{id}(id=${user.id})}" th:object="${user}">
+                        <label class="labels">Username</label>
+                        <input type="text" class="form-control" th:field="*{username}" id="username" readonly />
+                    </div>
+                    <div class="col-md-12" th:action="@{/user/{id}(id=${user.id})}" th:object="${user}">
+                        <label class="labels">Email</label>
+                        <input type="text" class="form-control" th:field="*{email}" id="email" readonly />
+                    </div>
+                    <!--div class="col-md-12" th:action="@{/user/{id}(id=${user.id})}" th:object="${user}">
+                        <label class="labels">Số Điện Thoại</label>
+                        <input type="text" class="form-control" th:field="*{phoneNumber}" id="phoneNumber" readonly />
+                    </div>
+                    <div class="col-md-12" th:action="@{/user/{id}(id=${user.id})}" th:object="${user}">
+                        <label class="labels">Địa Chỉ</label>
+                        <input type="text" class="form-control" th:field="*{address}" id="address" readonly />
+                    </div-->
+                    <div class="col-md-12" th:action="@{/user/{id}(id=${user.id})}" th:object="${user}">
+                        <label class="labels">Số Điện Thoại</label>
+                        <input type="text" class="form-control" th:field="*{phoneNumber}" id="phoneNumber"
+                               th:readonly="true" th:placeholder="${user.phoneNumber != null && user.phoneNumber != '' ? '' : 'Chưa có thông tin'}" />
+                    </div>
+                    <div class="col-md-12" th:action="@{/user/{id}(id=${user.id})}" th:object="${user}">
+                        <label class="labels">Địa Chỉ</label>
+                        <input type="text" class="form-control" th:field="*{address}" id="address"
+                               th:readonly="true" th:placeholder="${user.address != null && user.address != '' ? '' : 'Chưa có thông tin'}" />
+                    </div>
+                    <div class="mt-5 text-center">
+                        <a th:href="@{/user/edit/{id}(id=${user.id})}" class="btn btn-primary profile-button">Chỉnh sửa thông tin</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-3 py-5">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="text-right">Kết Nối Mạng Xã Hội</h4>
+                </div>
+                <div class="social-links">
+                    <div class="d-flex align-items-center justify-content-start mb-3">
+                        <i class="fab fa-facebook fa-2x text-primary mr-3"></i>
+                        <a href="https://www.facebook.com" target="_blank" class="social-link">
+                            Facebook
+                        </a>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-start mb-3">
+                        <i class="fab fa-twitter fa-2x text-info mr-3"></i>
+                        <a href="https://www.twitter.com" target="_blank" class="social-link">
+                            Twitter
+                        </a>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-start mb-3">
+                        <i class="fab fa-instagram fa-2x text-danger mr-3"></i>
+                        <a href="https://www.instagram.com" target="_blank" class="social-link">
+                            Instagram
+                        </a>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-start mb-3">
+                        <i class="fab fa-linkedin fa-2x text-primary mr-3"></i>
+                        <a href="https://www.linkedin.com" target="_blank" class="social-link">
+                            LinkedIn
+                        </a>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-start mb-3">
+                        <i class="fab fa-youtube fa-2x text-danger mr-3"></i>
+                        <a href="https://www.youtube.com" target="_blank" class="social-link">
+                            YouTube
+                        </a>
+                    </div>
+                </div>
+                <div class="mt-4 text-center">
+                    <i class="fas fa-share-alt fa-5x text-secondary"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:replace="layout::footer"></th:block>
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+</body>
+</html>

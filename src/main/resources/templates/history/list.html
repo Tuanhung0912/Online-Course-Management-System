@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Lịch sử học tập</title>
+    <th:block th:replace="layout :: link-css"></th:block>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link th:fragment="link-css" rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link th:fragment="link-css" rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f3f4f6;
+            font-family: 'Roboto', Arial, sans-serif;
+        }
+
+        h1 {
+            color: #34495e;
+            margin-bottom: 30px;
+            font-weight: bold;
+            text-align: center;
+            font-size: 2.5rem;
+        }
+
+        /* Card styling */
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            background: #ffffff;
+            margin-bottom: 20px;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Card image */
+        .card-img-top {
+            border-bottom: 3px solid #6a89cc;
+            border-radius: 0;
+        }
+
+        /* Card header */
+        .card-header {
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(45deg, #6a89cc, #1e3799);
+            color: white;
+        }
+
+        /* Card body */
+        .card-body p {
+            font-size: 1rem;
+            margin-bottom: 10px;
+            color: #4a4a4a;
+        }
+
+        .card-body ul {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .card-body ul li {
+            padding: 10px 15px;
+            border-radius: 8px;
+            background: #f9f9f9;
+            margin-bottom: 10px;
+            color: #333;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, background-color 0.3s;
+        }
+
+        .card-body ul li:hover {
+            transform: scale(1.03);
+            background: #6a89cc;
+            color: white;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .col-md-4 {
+                margin-bottom: 20px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+        }
+
+        /* Nút quay về đầu trang */
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(45deg, #6a11cb, #2575fc);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            font-size: 1.5rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+        }
+        .back-to-top.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .back-to-top:hover {
+            transform: scale(1.2);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Hiệu ứng cuộn */
+        .scroll-animation {
+            animation: scrollToTop 1s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        @keyframes scrollToTop {
+            from {
+                transform: translateY(300px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Nút Xem chi tiết */
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-primary i {
+            margin-right: 8px;
+            font-size: 1.2rem;
+        }
+
+        /* Tiêu đề Lịch sử học tập */
+        .section-title {
+            font-size: 3rem; /* Cỡ chữ lớn */
+            font-weight: 700; /* Chữ đậm */
+            text-transform: uppercase; /* Chữ in hoa */
+            text-align: center; /* Căn giữa chữ */
+            color: #1e3799; /* Màu chữ chính */
+            background: linear-gradient(45deg, #6a11cb, #2575fc); /* Gradient chữ */
+            -webkit-background-clip: text; /* Hiệu ứng gradient chữ */
+            -webkit-text-fill-color: transparent; /* Làm trong suốt nền chữ */
+            position: relative; /* Tạo vị trí cho gạch chân */
+            margin-bottom: 30px; /* Khoảng cách dưới */
+            letter-spacing: 2px; /* Giãn cách chữ */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2); /* Bóng đổ nhẹ */
+        }
+
+        /* Gạch chân động */
+        .section-title::after {
+            content: "";
+            position: absolute;
+            bottom: -8px; /* Khoảng cách dưới chữ */
+            left: 50%; /* Bắt đầu từ giữa */
+            width: 100px; /* Độ dài gạch chân ban đầu */
+            height: 4px; /* Độ dày */
+            background: linear-gradient(90deg, #6a89cc, #1e3799); /* Gradient cho gạch chân */
+            border-radius: 2px; /* Bo tròn gạch chân */
+            transform: translateX(-50%); /* Căn giữa */
+            transition: all 0.3s ease; /* Hiệu ứng chuyển động */
+        }
+
+        .section-title:hover::after {
+            width: 150px; /* Mở rộng gạch chân khi hover */
+        }
+    </style>
+</head>
+<body>
+<th:block th:replace="layout :: header"></th:block>
+<div class="container mt-5">
+    <h1 class="section-title">LỊCH SỬ HỌC TẬP</h1>
+    <div class="row">
+        <!-- Loop through completedLessons -->
+        <div class="col-md-4" th:each="entry : ${completedLessons}">
+            <div class="card">
+                <!-- Ảnh khóa học -->
+                <img th:src="@{${entry.key.imageData}}" class="card-img-top img-fluid" alt="Ảnh khóa học"
+                     style="max-height: 200px; object-fit: cover;">
+
+                <div class="card-header">
+                    <i class="fas fa-book-reader"></i>
+                    <span th:text="${entry.key.name}"></span>
+                </div>
+
+                <div class="card-body">
+                    <!-- Thời gian hoàn thành -->
+                    <p>
+                        <strong>Thời gian hoàn thành:</strong>
+                        <span th:if="${courseCompletionDates.containsKey(entry.key)}" th:text="${#temporals.format(courseCompletionDates[entry.key], 'dd/MM/yyyy HH:ss:mm')}"></span>
+                    </p>
+
+                    <!-- Tổng thời gian học -->
+                    <p>
+                        <strong>Tổng thời gian đã học:</strong>
+                        <span th:if="${totalStudyTime.containsKey(entry.key)}" th:text="${totalStudyTime[entry.key]}"></span>
+                    </p>
+
+
+                    <!-- Bài học đã hoàn thành -->
+                    <p><strong>Bài học đã hoàn thành:</strong></p>
+                    <ul>
+                        <li th:each="lesson : ${entry.value}" th:text="${lesson.name}"></li>
+                    </ul>
+
+                    <!-- Bài tập trắc nghiệm đã hoàn thành -->
+                    <p><strong>Bài tập trắc nghiệm đã hoàn thành:</strong></p>
+                    <ul>
+                        <li th:each="quiz : ${entry.key.quizzes}" th:if="${quizCompletedMap[quiz.id]}"
+                            th:text="${quiz.title}"></li>
+                    </ul>
+
+                    <!-- Nút Xem chi tiết -->
+                    <div class="text-center mt-4">
+                        <a th:href="@{/courses/details/{id}(id=${entry.key.id})}" class="btn btn-primary btn-lg">
+                            <i class="fa fa-info-circle"></i> Xem chi tiết
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Nút quay về đầu trang -->
+<button class="back-to-top" id="backToTop">
+    <i class="fa fa-chevron-up"></i>
+</button>
+
+<script>
+    // Hiển thị nút quay về đầu trang khi cuộn
+    const backToTopButton = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) {
+            backToTopButton.classList.add('show');
+        } else {
+            backToTopButton.classList.remove('show');
+        }
+    });
+
+    // Cuộn mượt mà về đầu trang khi nhấn nút
+    backToTopButton.addEventListener('click', () => {
+        document.documentElement.classList.add('scroll-animation'); // Thêm hiệu ứng
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        // Xóa hiệu ứng sau khi hoàn tất
+        setTimeout(() => {
+            document.documentElement.classList.remove('scroll-animation');
+        }, 1000);
+    });
+</script>
+
+<th:block th:replace="layout :: footer"></th:block>
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

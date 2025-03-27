@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <title th:text="${course.name} ?: 'Course Detail'">Chi Tiết khóa học</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <th:block th:replace="layout::link-css"></th:block>
+    <link th:fragment="link-css" rel="stylesheet" th:href="@{/css/style.css}">
+    <link th:fragment="link-css" rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        a {
+            text-decoration: none;
+        }
+
+        .course-details-container {
+            margin-top: 40px;
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .course-image {
+            max-height: 500px;
+            width: 95%;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        .BackButton {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        .course-info {
+            margin-top: 15px;
+            font-size: 16px;
+            color: #555;
+        }
+        .course-info p {
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #f1f3f5;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+        }
+        .course-info p strong {
+            margin-right: 10px;
+            color: #333;
+            font-weight: 600;
+        }
+        .course-info i {
+            color: #007bff;
+            margin-right: 8px;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            border-color: #28a745;
+            color: #fff;
+            padding: 10px 20px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+            transform: scale(1.05);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+         /* Căn chỉnh chung cho khu vực bình luận */
+        .comments-section {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .comments-section h3 {
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+
+        .course-progress-section {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-summary {
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            font-size: 14px;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .lesson-list ul {
+            padding: 0;
+            list-style: none;
+        }
+
+        .lesson-list .list-group-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 10px;
+            padding: 15px;
+            transition: transform 0.2s ease, box-shadow 0.3s ease;
+        }
+
+        .lesson-list .list-group-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .badge {
+            font-size: 14px;
+            padding: 8px 12px;
+            border-radius: 5px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .list-group-item {
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            padding: 15px 20px;
+            transition: all 0.3s ease;
+        }
+
+        .list-group-item:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .comment-header strong {
+            font-size: 16px;
+            color: #333;
+        }
+
+        .comment-header span {
+            font-size: 14px;
+            color: #888;
+        }
+
+        .comment-content {
+            margin-top: 10px;
+            margin-bottom: 15px;
+            font-size: 15px;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .comment-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .comment-actions .btn {
+            font-size: 14px;
+            padding: 8px 12px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .comment-actions .btn i {
+            margin-right: 5px;
+        }
+
+        .comments-section h3 {
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+
+        .comments-count {
+            font-size: inherit; /* Đồng bộ kích thước với chữ "Bình luận" */
+            font-weight: normal; /* Giữ phong cách giống với chữ "Bình luận" */
+            color: #007bff; /* Màu xanh giống chữ "Bình luận" */
+            margin-left: 10px; /* Khoảng cách giữa chữ và số */
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            border-color: #28a745;
+            color: #fff;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+            box-shadow: 0 4px 10px rgba(40, 167, 69, 0.4);
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            color: #fff;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+            box-shadow: 0 4px 10px rgba(220, 53, 69, 0.4);
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+            color: #fff;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            box-shadow: 0 4px 10px rgba(108, 117, 125, 0.4);
+        }
+
+        textarea.form-control {
+            resize: none;
+            font-size: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: none;
+            transition: border-color 0.3s ease;
+        }
+
+        textarea.form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+        }
+
+        .add-comment {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .add-comment h3 {
+            color: #007bff;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .form-group textarea {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-group textarea:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            font-size: 16px;
+            font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #004085;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /*Vùng ngôi sao*/
+        .rating-stars {
+            margin: 10px 0;
+        }
+
+        .rating-stars .star {
+            font-size: 20px;
+            color: #ffcc00; /* Màu vàng cho sao đã đánh giá */
+        }
+
+        .rating-stars .star-empty {
+            font-size: 20px;
+            color: #ccc; /* Màu xám cho sao trống */
+        }
+
+        /* Vùng chứa đánh giá ngôi sao */
+        .star-rating {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 20px;
+        }
+
+        /* Ẩn input radio */
+        .star-rating input[type="radio"] {
+            display: none;
+        }
+
+        /* Kiểu dáng mặc định cho ngôi sao */
+        .star-rating label {
+            font-size: 30px;
+            color: #ccc; /* Màu xám cho sao chưa được chọn */
+            cursor: pointer;
+            transition: color 0.3s ease, transform 0.2s ease;
+        }
+
+        /* Hiển thị sao vàng khi hover */
+        .star-rating label:hover,
+        .star-rating label:hover ~ label {
+            color: #ffcc00; /* Màu vàng khi di chuột qua */
+            transform: scale(1.1); /* Phóng to nhẹ khi hover */
+        }
+
+        /* Reset tất cả sao về màu xám khi chọn */
+        .star-rating input[type="radio"]:checked ~ label {
+            color: #ccc;
+        }
+
+        /* Hiển thị sao vàng từ sao được chọn trở về trước */
+        .star-rating input[type="radio"]:checked + label,
+        .star-rating input[type="radio"]:checked + label ~ label {
+            color: #ffcc00; /* Màu vàng cho sao được chọn */
+        }
+
+        /* Hiệu ứng bounce khi chọn sao */
+        .star-rating input[type="radio"]:checked + label {
+            animation: bounce 0.3s;
+        }
+
+        /* Keyframes cho hiệu ứng bounce */
+        @keyframes bounce {
+            0% {
+                transform: scale(1);
+            }
+            30% {
+                transform: scale(1.2);
+            }
+            50% {
+                transform: scale(0.9);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Nút quay về đầu trang */
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(45deg, #6a11cb, #2575fc);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            font-size: 1.5rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+        }
+        .back-to-top.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .back-to-top:hover {
+            transform: scale(1.2);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Hiệu ứng cuộn */
+        .scroll-animation {
+            animation: scrollToTop 1s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+	    @keyframes scrollToTop {
+            from {
+                transform: translateY(300px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .quiz-list .list-group-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .quiz-status {
+            display: flex;
+            align-items: center;
+            margin-right: 15px; /* Giảm khoảng cách giữa trạng thái và nút */
+            gap: 10px; /* Khoảng cách nhỏ giữa badge và nút */
+        }
+
+        .badge {
+            font-size: 14px;
+            padding: 8px 12px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .badge-success {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .badge-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .quiz-action .btn-primary {
+            font-size: 14px;
+            padding: 6px 10px;
+            border-radius: 5px;
+        }
+
+        .quiz-info {
+            flex-grow: 1;
+            margin-right: 10px; /* Tạo khoảng cách giữa thông tin và trạng thái */
+        }
+
+        .quiz-action {
+            margin-left: auto; /* Đẩy nút "Làm bài" sát bên phải */
+        }
+
+    </style>
+</head>
+<body>
+<th:block th:replace="layout::header"></th:block>
+<div class="container">
+    <div class="course-details-container">
+        <div class="row">
+            <div class="col-md-4">
+                <img th:src="@{${course.imageData}}" alt="Hình Ảnh Khóa Học" class="course-image img-fluid">
+            </div>
+            <div class="col-md-8">
+                <h2 th:text="${course.name}" class="display-6"></h2>
+                <div class="course-info">
+                    <p>
+                        <i class="fa fa-book"></i>
+                        <strong>Loại khóa học:</strong> <span th:text="${course.courseCatalog.name}"></span>
+                    </p>
+                    <p>
+                        <i class="fa fa-info-circle"></i>
+                        <strong>Mô tả Khóa học:</strong> <span th:text="${course.description}"></span>
+                    </p>
+                    <p>
+                        <i class="fa fa-clock"></i>
+                        <strong>Thời lượng:</strong> <span th:text="${course.duration} + ' giờ'"></span>
+                    </p>
+                    <p>
+                        <i class="fas fa-user"></i>
+                        <strong>Người tạo:</strong>
+                        <span th:text="${creatorName}">Đang cập nhật</span>
+                    </p>
+                    <p>
+                        <i class="fa fa-calendar-alt"></i>
+                        <strong>Thời gian tạo:</strong>
+                        <span th:if="${course.creationTime != null}" th:text="${#temporals.format(course.creationTime, 'dd/MM/yyyy HH:mm:ss')}"></span>
+                        <span th:if="${course.creationTime == null}">Chưa xác định</span>
+                    </p>
+                    <p>
+                        <i class="fas fa-hourglass-half"></i>
+                        <strong>Tổng thời gian đã tham gia (Kể từ ngày tham gia):</strong>
+                        <span th:text="${totalStudyTime} + ' giờ'">0 giờ</span>
+                    </p>
+                    <p>
+                        <i class="fas fa-check-circle"></i>
+                        <strong>Trạng thái khóa học:</strong>
+                        <span th:if="${totalProgressPercent == 100}" class="badge bg-success">Đã hoàn thành</span>
+                        <span th:if="${totalProgressPercent < 100}" class="badge bg-warning">Chưa hoàn thành</span>
+                    </p>
+                </div>
+
+                <!-- Nút Thêm Bài Học -->
+                <div class="text-center mt-4" sec:authorize="hasAnyAuthority('ADMIN')">
+                    <a th:href="@{/lessons/list/{courseId}(courseId=${course.id})}" class="btn btn-warning btn-lg shadow">
+                        <i class="fa fa-cog"></i> Quản lý bài học
+                    </a>
+                </div>
+
+                <div class="text-center mt-4" sec:authorize="hasAnyAuthority('ADMIN')">
+                    <a th:href="@{/lessons/add/{courseId}(courseId=${course.id})}" class="btn btn-warning btn-lg shadow">
+                        <i class="fa fa-plus-circle"></i> Thêm bài học
+                    </a>
+                </div>
+
+                <!-- Thêm nút tham gia khóa học -->
+                <div class="text-center mt-4">
+                    <form th:if="${!isEnrolled}" th:action="@{/enrollments/enroll}" method="post">
+                        <!-- Nút tham gia khóa học -->
+                        <input type="hidden" name="courseId" th:value="${course.id}" />
+                        <button type="submit" class="btn btn-success btn-lg shadow">
+                            <i class="fa fa-check-circle"></i> Tham gia Khóa học
+                        </button>
+                    </form>
+
+                    <div th:if="${isEnrolled}">
+                        <!-- Nút đã tham gia khóa học -->
+                        <a th:href="@{/lessons/list/{courseId}(courseId=${course.id})}"
+                           class="btn btn-info btn-lg shadow">
+                            <i class="fa fa-list"></i> Xem danh sách bài học
+                        </a>
+                    </div>
+                </div>
+                <!-- Kết thúc nút tham gia khóa học -->
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${isEnrolled}">
+        <div class="course-progress-section mt-5">
+            <h3 class="text-center" style="color: #007bff; border-bottom: 2px solid #007bff; padding-bottom: 10px;">
+                Tiến trình học tập
+            </h3>
+
+            <div class="progress-summary mt-4">
+                <p class="text-center" style="font-size: 18px; color: #555;">
+                    Bạn đã hoàn thành
+                    <strong th:text="${totalProgressPercent + ' %'}">0%</strong> của khóa học này.
+                </p>
+                <div class="progress" style="height: 25px; border-radius: 10px; box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);">
+                    <div class="progress-bar bg-success progress-bar-striped progress-bar-animated"
+                         role="progressbar"
+                         th:style="|width: ${totalProgressPercent}%;|"
+                         th:text="${totalProgressPercent + '%'}">
+                    </div>
+                </div>
+            </div>
+
+            <div class="lesson-list mt-5">
+                <h4 style="color: #333; margin-bottom: 20px;">Danh sách bài học:</h4>
+                <ul class="list-group">
+                    <li class="list-group-item d-flex justify-content-between align-items-center"
+                        th:each="lesson : ${course.lessons}">
+                        <div>
+                            <strong th:text="${lesson.name}">Tên bài học</strong>
+                            <p class="text-muted" style="margin: 5px 0;" th:text="${lesson.description}">Mô tả bài học</p>
+                        </div>
+                        <div>
+                            <span class="badge bg-success text-white" th:if="${lessonCompletedMap[lesson.id]}">
+                                Hoàn thành
+                            </span>
+                            <span class="badge bg-secondary text-white" th:if="${!lessonCompletedMap[lesson.id]}">
+                                Chưa hoàn thành
+                            </span>
+
+                            <form th:if="${lessonCompletedMap[lesson.id]}"
+                                  th:action="@{/courses/details/{courseId}/lesson/{lessonId}/incomplete(courseId=${course.id}, lessonId=${lesson.id})}"
+                                  method="post" style="display: inline;">
+                                <button type="submit" class="btn btn-warning btn-sm">
+                                    <i class="fa fa-undo"></i> Đánh dấu chưa hoàn thành
+                                </button>
+                            </form>
+
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Danh sách bài tập trắc nghiệm -->
+            <div class="quiz-list mt-5">
+                <h4 style="color: #333; margin-bottom: 20px;">Danh sách bài tập trắc nghiệm:</h4>
+                <ul class="list-group">
+                    <li class="list-group-item d-flex align-items-center justify-content-between"
+                        th:each="quiz : ${course.quizzes}">
+                        <div class="quiz-info flex-grow-1">
+                            <strong th:text="${quiz.title}">Tên bài tập</strong>
+                            <p class="text-muted mt-1 mb-0" th:text="${quiz.description}">Mô tả bài tập</p>
+                        </div>
+
+                        <div class="quiz-status d-flex align-items-center me-3">
+                            <span th:if="${quizCompletedMap[quiz.id]}" class="badge badge-success text-white me-2">
+                                Hoàn thành
+                            </span>
+                            <span th:if="${!quizCompletedMap[quiz.id]}" class="badge badge-secondary text-white me-2">
+                                Chưa hoàn thành
+                            </span>
+                        </div>
+
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+
+    <div th:if="${!isEnrolled}" class="alert alert-warning mt-5 text-center">
+        <h5>Vui lòng tham gia khóa học để theo dõi tiến trình học tập!</h5>
+    </div>
+
+    <div class="certificate-section mt-5 text-center" th:if="${totalProgressPercent == 100}">
+        <h4>Bạn đã hoàn thành toàn bộ khóa học!</h4>
+        <form th:action="@{/courses/details/{courseId}/certificate(courseId=${course.id})}" method="post">
+            <button type="submit" class="btn btn-success btn-lg shadow">
+                <i class="fa fa-download"></i> Tải chứng chỉ
+            </button>
+        </form>
+    </div>
+
+    <div class="comments-section mt-5">
+        <h3>
+            Bình luận
+            <span class="comments-count" th:text="'(' + ${commentCount} + ')'">0</span>
+        </h3>
+        <ul class="list-group">
+            <li class="list-group-item" th:each="comment : ${comments}">
+                <div class="comment-header">
+                    <strong th:text="${comment.user.username}">Username</strong>
+                    <span th:text="${#temporals.format(comment.createdAt, 'dd/MM/yyyy HH:mm')}">Thời gian</span>
+                </div>
+
+                <!-- Hiển thị ngôi sao đánh giá -->
+                <div class="rating-stars">
+                    <!-- Hiển thị sao vàng -->
+                    <span th:each="star : ${#numbers.sequence(1, comment.rating)}" class="star">&#9733;</span>
+
+                    <!-- Hiển thị sao xám (chỉ khi số sao < 5) -->
+                    <span th:if="${comment.rating < 5}"
+                          th:each="star : ${#numbers.sequence(comment.rating + 1, 5)}"
+                          class="star-empty">&#9733;</span>
+                </div>
+
+                <!-- Hiển thị nội dung bình luận -->
+                <div class="comment-content" th:if="${comment.user.username != #authentication.name}">
+                    <p th:text="${comment.content}"></p>
+                </div>
+
+                <!-- Sửa bình luận -->
+                <div th:if="${comment.user.username == #authentication.name}">
+                    <form th:action="@{/courses/details/comments/edit/{commentId}(commentId=${comment.id})}" method="post">
+                        <!-- Textarea chỉnh sửa nội dung bình luận -->
+                        <textarea name="content" class="form-control" rows="2" th:text="${comment.content}"></textarea>
+
+                        <!-- Nút hành động -->
+                        <div class="comment-actions mt-3">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fa fa-save"></i> Lưu
+                            </button>
+                            <a th:href="@{/courses/details/{courseId}(courseId=${course.id})}" class="btn btn-secondary">
+                                <i class="fa fa-times"></i> Hủy
+                            </a>
+                            <a th:href="@{/courses/details/comments/delete/{commentId}(commentId=${comment.id})}"
+                               class="btn btn-danger"
+                               onclick="return confirm('Bạn có chắc chắn muốn xóa bình luận này?')">
+                                <i class="fa fa-trash"></i> Xóa
+                            </a>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Hiển thị danh sách câu trả lời -->
+                <ul class="list-group mt-3" th:each="reply : ${comment.replies}">
+                    <li class="list-group-item">
+                        <div class="comment-header">
+                            <strong th:text="${reply.user.username}">Username</strong>
+                            <span th:text="${#temporals.format(reply.createdAt, 'dd/MM/yyyy HH:mm')}">Thời gian</span>
+                        </div>
+                        <div class="comment-content">
+                            <p th:text="${reply.content}">Nội dung câu trả lời</p>
+                        </div>
+
+                        <!-- Form sửa câu trả lời -->
+                        <div class="edit-reply-form mt-3" th:if="${reply.user.username == #authentication.name}">
+                            <form th:action="@{/courses/details/comments/reply/edit/{replyId}(replyId=${reply.id})}" method="post">
+                                <textarea name="content" class="form-control mb-2" rows="2" th:text="${reply.content}" required></textarea>
+                                <button class="btn btn-warning btn-sm">
+                                    <i class="fa fa-edit"></i> Sửa
+                                </button>
+                                <a th:href="@{/courses/details/{courseId}(courseId=${course.id})}" class="btn btn-secondary btn-sm">
+                                    <i class="fa fa-times"></i> Hủy
+                                </a>
+                                <a th:href="@{/courses/details/comments/reply/delete/{replyId}(replyId=${reply.id})}"
+                                   class="btn btn-danger btn-sm"
+                                   onclick="return confirm('Bạn có chắc chắn muốn xóa câu trả lời này?');">
+                                    <i class="fa fa-trash"></i> Xóa
+                                </a>
+                            </form>
+                        </div>
+
+                    </li>
+                </ul>
+
+                <!-- Form thêm câu trả lời -->
+                <div class="add-reply mt-3">
+                    <form th:action="@{/courses/details/comments/reply/{commentId}(commentId=${comment.id})}" method="post">
+                        <textarea name="content" class="form-control mb-2" rows="2" placeholder="Viết câu trả lời..." required></textarea>
+                        <button type="submit" class="btn btn-primary btn-sm">
+                            <i class="fa fa-reply"></i> Trả lời
+                        </button>
+                    </form>
+                </div>
+
+            </li>
+        </ul>
+    </div>
+
+    <!-- Form Thêm Bình Luận -->
+    <div class="add-comment mt-4">
+        <h3>Thêm bình luận và đánh giá</h3>
+        <form th:action="@{/courses/details/comments/{id}(id=${course.id})}" method="post">
+            <!-- Đánh giá ngôi sao -->
+            <div class="star-rating">
+                <input type="radio" id="star5" name="rating" value="5" required />
+                <label for="star5" title="5 sao">&#9733;</label>
+
+                <input type="radio" id="star4" name="rating" value="4" />
+                <label for="star4" title="4 sao">&#9733;</label>
+
+                <input type="radio" id="star3" name="rating" value="3" />
+                <label for="star3" title="3 sao">&#9733;</label>
+
+                <input type="radio" id="star2" name="rating" value="2" />
+                <label for="star2" title="2 sao">&#9733;</label>
+
+                <input type="radio" id="star1" name="rating" value="1" />
+                <label for="star1" title="1 sao">&#9733;</label>
+            </div>
+
+            <div class="form-group">
+                <textarea name="content" class="form-control" rows="3" placeholder="Viết bình luận..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">
+                <i class="fa fa-paper-plane"></i> Gửi bình luận
+            </button>
+        </form>
+    </div>
+    <div class="text-center BackButton">
+        <a th:href="@{/courses}" class="btn btn-primary">Back to Courses</a>
+    </div>
+</div>
+
+<!-- Nút quay về đầu trang -->
+<button class="back-to-top" id="backToTop">
+    <i class="fa fa-chevron-up"></i>
+</button>
+
+<script>
+    // Hiển thị nút quay về đầu trang khi cuộn
+    const backToTopButton = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) {
+            backToTopButton.classList.add('show');
+        } else {
+            backToTopButton.classList.remove('show');
+        }
+    });
+
+    // Cuộn mượt mà về đầu trang khi nhấn nút
+    backToTopButton.addEventListener('click', () => {
+        document.documentElement.classList.add('scroll-animation'); // Thêm hiệu ứng
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        // Xóa hiệu ứng sau khi hoàn tất
+        setTimeout(() => {
+            document.documentElement.classList.remove('scroll-animation');
+        }, 1000);
+    });
+</script>
+
+
+<script>
+    function toggleEditReply(replyId) {
+        // Lấy phần tử form sửa theo ID
+        const form = document.getElementById(`editReplyForm-${replyId}`);
+
+        // Kiểm tra nếu form tồn tại
+        if (form) {
+            // Thay đổi trạng thái hiển thị của form
+            form.style.display = form.style.display === 'none' || form.style.display === '' ? 'block' : 'none';
+        } else {
+            console.error(`Không tìm thấy form với ID: editReplyForm-${replyId}`);
+        }
+    }
+</script>
+
+
+<th:block th:replace="layout::footer"></th:block>
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>
