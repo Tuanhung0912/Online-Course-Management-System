@@ -67,7 +67,7 @@ new BCryptPasswordEncoder().encode("yourPassword")
 Edit ```src/main/resources/application.properties``` and update the DB connection:
 
 ```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/lms_db
+spring.datasource.url=jdbc:mysql://localhost:3306/lms
 spring.datasource.username=${DB_username}
 spring.datasource.password=${DB_password}
 ```
