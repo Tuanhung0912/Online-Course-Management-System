@@ -4,8 +4,84 @@ This is an **Online Course Management System** built using **Java Spring Boot**.
 
 ## Demo Application
 
+### 🔐 Login Page
+
+![Login Page](screenshot/login.png)
+> Login screen with support for username/password and OAuth2 (e.g., Google login).
+
+---
+
+### 🏠 Home Page
+
 ![Home Page](screenshot/homepage_1.jpg)
+![Home Page](screenshot/homepage_2.jpg)
 > This is the landing page of the platform, showing featured courses and quick access to login or register.
+
+---
+
+### 📚 Course List
+
+![Course List](images/course-list.png)
+> A user-friendly interface where students can browse available courses.
+
+---
+
+### 📘 Course Details & Lessons
+
+![Course Details](images/course-detail.png)
+> Inside each course, users can view lessons, track their progress, and leave comments.
+
+---
+
+### 📝 Quiz Interface
+
+![Quiz](images/quiz.png)
+> Students can take quizzes after lessons. The system auto-grades and records results.
+
+---
+
+### 📈 User Progress
+
+![Progress](images/progress.png)
+> Users can monitor their own learning journey and achievements.
+
+---
+
+### 🏆 Course History
+
+![Course History](images/course-history.png)
+> Students can view a history of their enrolled courses and track their progress in each one.
+
+---
+
+### ✉️ Thank You Email
+
+![Thank You Email](images/thank-you-email.png)
+> After completing a course, students receive a thank you email, confirming their participation and achievements.
+
+---
+
+### 👤 Account Profile
+
+![Account Profile](images/account-profile.png)
+> The account profile page allows users to manage their personal details, including email and password.
+
+---
+
+### 📚 Registered Courses
+
+![Registered Courses](images/registered-courses.png)
+> View all the courses the student is currently enrolled in, with quick links to start the course or continue learning.
+
+---
+
+### 🎓 Completion Certificate
+
+![Completion Certificate](images/completion-certificate.png)
+> After successfully finishing a course, students can download their course completion certificate.
+
+---
+
 
 ## Features
 
