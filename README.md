@@ -2,6 +2,11 @@
 
 This is an **Online Course Management System** built using **Java Spring Boot**. The system allows users to manage courses, lessons, quizzes, enrollments, and more. It also supports OAuth2 login and role-based authorization.
 
+## Demo Application
+
+![Home Page](screenshot/homepage_1.jpg)
+> This is the landing page of the platform, showing featured courses and quick access to login or register.
+
 ## Features
 
 - User registration & login (including OAuth2)
