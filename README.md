@@ -6,7 +6,7 @@ This is an **Online Course Management System** built using **Java Spring Boot**.
 
 ### 🔐 Login Page
 
-![Login Page](screenshot/login.png)
+![Login Page](screenshot/loginpage.jpg)
 > Login screen with support for username/password and OAuth2 (e.g., Google login).
 
 ---
@@ -21,63 +21,60 @@ This is an **Online Course Management System** built using **Java Spring Boot**.
 
 ### 📚 Course List
 
-![Course List](images/course-list.png)
+![Course List](screenshot/courselist.jpg)
 > A user-friendly interface where students can browse available courses.
 
 ---
 
 ### 📘 Course Details & Lessons
 
-![Course Details](images/course-detail.png)
+![Course Details](screenshot/coursedetail_1.jpg)
+![Course Details](screenshot/coursedetail_2.jpg)
+![Course Details](screenshot/lessonlist.jpg)
 > Inside each course, users can view lessons, track their progress, and leave comments.
+
+---
+
+### 📚 Registered Courses
+
+![Registered Courses](screenshot/enrollmentlist.jpg)
+> View all the courses the student is currently enrolled in, with quick links to start the course or continue learning.
 
 ---
 
 ### 📝 Quiz Interface
 
-![Quiz](images/quiz.png)
+![Quiz](screenshot/quizlist.jpg)
+![Quiz](screenshot/quiztest.jpg)
+![Quiz](screenshot/quizresult.jpg)
 > Students can take quizzes after lessons. The system auto-grades and records results.
-
----
-
-### 📈 User Progress
-
-![Progress](images/progress.png)
-> Users can monitor their own learning journey and achievements.
 
 ---
 
 ### 🏆 Course History
 
-![Course History](images/course-history.png)
+![Course History](screenshot/history.jpg)
 > Students can view a history of their enrolled courses and track their progress in each one.
 
 ---
 
 ### ✉️ Thank You Email
 
-![Thank You Email](images/thank-you-email.png)
+![Thank You Email](screenshot/emailnotice.jpg)
 > After completing a course, students receive a thank you email, confirming their participation and achievements.
 
 ---
 
 ### 👤 Account Profile
 
-![Account Profile](images/account-profile.png)
+![Account Profile](screenshot/profile.jpg)
 > The account profile page allows users to manage their personal details, including email and password.
-
----
-
-### 📚 Registered Courses
-
-![Registered Courses](images/registered-courses.png)
-> View all the courses the student is currently enrolled in, with quick links to start the course or continue learning.
 
 ---
 
 ### 🎓 Completion Certificate
 
-![Completion Certificate](images/completion-certificate.png)
+![Completion Certificate](screenshot/cetificate.jpg)
 > After successfully finishing a course, students can download their course completion certificate.
 
 ---
