@@ -111,7 +111,7 @@ cd your-repo-name/LMS
 2.1. Create the Database
 
 ```sql
-CREATE DATABASE lms_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE lms CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
 
 2.2. Create Roles
